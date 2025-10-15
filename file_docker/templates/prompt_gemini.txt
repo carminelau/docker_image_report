@@ -1,0 +1,26 @@
+Crea un riassunto dell'analisi degli sforamenti per le centraline, andando ad effettuare un'overview su ogni centralina. Con un semplice testo, senza elenchi puntati o altro.La centralina ITNCLMD3T0SX29 ha registrato alcuni sforamenti. Ad esempio, il 6 settembre 2024 alle 1:00, il sensore per il biossido di azoto (NO2) ha rilevato un valore di 16.85, mentre il sensore per il monossido di carbonio (CO) ha registrato un valore di 42.45. In quella stessa data, la temperatura era di 22.06 gradi Celsius e l'umidità era dell'84.83%.
+
+Un altro sforamento è stato registrato il 19 settembre 2024 alle 10:00. In questa occasione, il sensore per il monossido di carbonio (CO) ha registrato un valore di 59.86, mentre la temperatura era di 20.19 gradi Celsius e l'umidità era dell'81.05%. 
+
+È importante notare che questi sono solo alcuni degli sforamenti registrati dalla centralina ITNCLMD3T0SX29 e che è necessario un'analisi più approfondita dei dati per comprendere appieno le cause e le conseguenze di questi eventi. 
+La centralina ITA0BPKUOK2WU4 ha registrato diversi sforamenti dei valori limite per diversi sensori. 
+
+Il sensore PM2.5 ha registrato sforamenti, ad esempio, il 3 settembre alle 4:00 con un valore di 32.90 e alle 5:00 con un valore di 36.08. Altri sforamenti si sono verificati il 4 settembre alle 7:00 con un valore di 29.57, il 5 settembre alle 6:00 con un valore di 26.47 e alle 7:00 con un valore di 30.91, il 7 settembre alle 9:00 con un valore di 28.11 e il 23 settembre alle 9:00 con un valore di 26.15. 
+
+Anche il sensore PM10 ha mostrato sforamenti, come il 3 settembre alle 4:00 con un valore di 44.18 e alle 5:00 con un valore di 49.31. Ulteriori sforamenti si sono verificati il 4 settembre alle 7:00 con un valore di 41.34, il 5 settembre alle 6:00 con un valore di 38.44 e alle 7:00 con un valore di 44.37, il 7 settembre alle 9:00 con un valore di 40.70 e il 23 settembre alle 9:00 con un valore di 37.00.
+
+Il sensore NO2 ha mostrato uno sforamento il 5 settembre alle 8:00 con un valore di 0.30.
+
+Un'analisi approfondita potrebbe rivelare ulteriori sforamenti e modelli temporali specifici, fornendo informazioni preziose sulla qualità dell'aria nella zona. 
+La centralina ITBCQ3XXDKAKU4 non ha registrato dati nel periodo in questione. 
+La centralina ITWDQLVKGG9SQ6 ha registrato diversi sforamenti dei valori dei sensori nel corso del periodo analizzato. 
+
+Si nota un picco di PM2.5 il 3 settembre alle 5:00, con un valore di 30.00, che è stato superato anche il 19 settembre alle 10:00, con un valore di 30.21. 
+
+Un altro sforamento significativo si è verificato per il sensore NO2 il 5 settembre alle 7:00, con un valore di 5.46. 
+
+Anche il sensore CO ha mostrato un valore elevato il 19 settembre alle 10:00, con un valore di 4.98. 
+
+Oltre a questi, si sono verificati altri sforamenti di minore entità per PM1, PM10, NO2 e CO in diverse date, ma non sono stati segnalati picchi particolarmente significativi.  
+
+È importante sottolineare che queste informazioni si riferiscono esclusivamente ai dati raccolti dalla centralina ITWDQLVKGG9SQ6 e non costituiscono un'analisi generale della qualità dell'aria.

@@ -1,0 +1,24 @@
+{
+    "January": "Gennaio",
+    "February": "Febbraio",
+    "March": "Marzo",
+    "April": "Aprile",
+    "May": "Maggio",
+    "June": "Giugno",
+    "July": "Luglio",
+    "August": "Agosto",
+    "September": "Settembre",
+    "October": "Ottobre",
+    "November": "Novembre",
+    "December": "Dicembre",
+    "map": "Mappa",
+    "graph_view": "Andamento Grafico",
+    "devices_analysis": "I dispositivi analizzati in questo report sono:",
+    "device_analysis": "Il dispositivo analizzato in questo report è:",
+    "places_analysis": "I luoghi analizzati in questo report sono:",
+    "place_analysis": "Il luogo analizzato in questo report è:",
+    "info_ssq": "Sense Square è un'azienda specializzata nella fornitura di strumenti e servizi di Environmental Intelligence (E.I.). Ciò significa che offriamo soluzioni per la raccolta, l'elaborazione e l'analisi di dati ambientali, al fine di fornire informazioni utili per la gestione e la protezione dell'ambiente.",
+    "report_automatically_generated": "Questo report è stato generato automaticamente dalla piattaforma Square",
+    "title_device": "Dispositivi"
+
+}

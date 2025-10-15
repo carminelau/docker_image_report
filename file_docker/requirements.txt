@@ -1,0 +1,8 @@
+reportlab
+PyPDF2
+widget_picture_generator
+openai
+webdriver-manager
+google-generativeai
+pandas
+pytz
