@@ -28,5 +28,5 @@ jobs:
         with:
           context: file_docker/
           push: true
-          tags: ghcr.io/carminelau/docker_image_multisorgente:latest
+          tags: ghcr.io/carminelau/docker_image_report:latest
           secrets: API_OPENAI=${{ secrets.API_OPENAI }}
