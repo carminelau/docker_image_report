@@ -1128,7 +1128,7 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
             print(f"Lunghezza dataframe mese {mese}: ", len(df_mese))
 
             for inquinante in df_mese.columns:
-                nome_inq = inquinante.split(" ")[0]
+                nome_inq = inquinante.split(' ')[0]
 
                 if nome_inq in nomi_inquinanti and nome_inq in limiti_inquinanti and nome_inq not in ["temperatura", "umidita"]:
                     count = len(df_mese[df_mese[inquinante] >
@@ -1271,7 +1271,7 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
             header_table = [create_paragraph("Stagione", 'Table Column')]
             for inquinante in df_season.columns:
                 header_table.append(create_paragraph(
-                    f"{nomi_inquinanti[inquinante.split(" ")[0]]}\n {inquinante.split(" ")[1]}", 'Table Column'))
+                    f"{nomi_inquinanti[inquinante.split(' ')[0]]}\n {inquinante.split(' ')[1]}", 'Table Column'))
 
             data.append(header_table)
 
@@ -1341,7 +1341,7 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
 
             for inquinante in df_semester.columns:
                 header_table.append(create_paragraph(
-                    f"{nomi_inquinanti[inquinante.split(" ")[0]]}\n {inquinante.split(" ")[1]}", 'Table Column'))
+                    f"{nomi_inquinanti[inquinante.split(' ')[0]]}\n {inquinante.split(' ')[1]}", 'Table Column'))
                 
             data.append(header_table)
 
