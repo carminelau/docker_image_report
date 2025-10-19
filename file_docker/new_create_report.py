@@ -1681,7 +1681,7 @@ def check_old_report(id: str, f: str, datastart: datetime, datafinish: datetime)
 
 TOKEN_WRITE = "1FPCPQCZPV7G"
 progetti = retrieve_project("WDBNX4IUF66C")
-progetti = [json.loads(open(f"{ABSOLUTE_PATH}/esempio_progetto.json").read())]
+#progetti = [json.loads(open(f"{ABSOLUTE_PATH}/esempio_progetto.json").read())]
 
 for prog in progetti:
     if prog["attivo"] is True:
