@@ -7,6 +7,9 @@ WORKDIR /app
 # Copia il file requirements.txt (se disponibile)
 COPY . .
 
+#creare una cartella che si chiama reports
+RUN mkdir reports
+
 # Installa le dipendenze specificate in requirements.txt
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
