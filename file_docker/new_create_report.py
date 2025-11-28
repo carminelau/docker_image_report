@@ -1850,6 +1850,7 @@ for prog in progetti:
                         os.remove(
                             f"{ABSOLUTE_PATH_REPORT}/{nome_report}_Analisi.pdf")
 
+                    delete = False
                     # with open(f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf", "rb") as fw:
                     #     r = requests.post(
                     #         "http://192.168.1.150:5004/inserisci_report", files={"report": fw}, data=payload)
@@ -1863,4 +1864,4 @@ for prog in progetti:
                     print(
                         f'{prog["alias_progetto"]} {data.strftime("%d/%m/%Y")} - ERRORE {format_exc()}')
                     
-    time.sleep(20000000)
+        time.sleep(120)
