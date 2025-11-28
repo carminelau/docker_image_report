@@ -269,7 +269,7 @@ def download_dati(place: dict, datainizio: datetime, datafine: datetime, req_typ
 
     print("Data inizio dopo la localizzazione:", datainizio)
     print("Data fine dopo la localizzazione:", datafine)
-    
+
     # Data a partire dalla quale si richiedono i dati. Il formato è del tipo anno-mese-giorno separati da "-".
     start_date = datainizio.strftime("%Y-%m-%dT%H:%M:%S%z").replace("+", "%2B")
 
@@ -1836,12 +1836,12 @@ for prog in progetti:
                         os.remove(
                             f"{ABSOLUTE_PATH_REPORT}/{nome_report}_Analisi.pdf")
 
-                    with open(f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf", "rb") as fw:
-                        r = requests.post(
-                            "http://192.168.1.150:5004/inserisci_report", files={"report": fw}, data=payload)
-                        print(r.text)
-                        if r.text == "Inserito":
-                            delete = True
+                    # with open(f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf", "rb") as fw:
+                    #     r = requests.post(
+                    #         "http://192.168.1.150:5004/inserisci_report", files={"report": fw}, data=payload)
+                    #     print(r.text)
+                    #     if r.text == "Inserito":
+                    #         delete = True
 
                     if delete:
                         os.remove(f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf")
