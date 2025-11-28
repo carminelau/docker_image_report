@@ -1,5 +1,9 @@
-# Usa un'immagine di base Python ufficiale
-FROM python:3.11-slim
+FROM selenium/standalone-chrome:latest
+
+USER root
+
+# Installa Python + dipendenze
+RUN apt-get update && apt-get install -y python3 python3-pip && rm -rf /var/lib/apt/lists/*
 
 # Imposta la directory di lavoro
 WORKDIR /app
