@@ -308,9 +308,10 @@ def download_dati(place: dict, datainizio: datetime, datafine: datetime, req_typ
         if zoom >= 4:
             url += "&squareID=" + place["squareID"]
 
-    # print("-------------------")
-    # print(url)
-    # print("-------------------")
+    print("-------------------")
+    print(url)
+    print("-------------------")
+    
     # Richiesta GET
     req = requests.get(url)
     print("Stato richiesta download dati:", req.status_code)
