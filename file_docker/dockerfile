@@ -1,45 +1,12 @@
-# Usa un'immagine di base Python ufficiale
 FROM python:3.11-slim
-
-# 1. Dipendenze di base
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget gnupg curl unzip ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-# 2. Installa Google Chrome (versione stabile)
-RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-linux-signing-keyring.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux-signing-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" \
-       > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends google-chrome-stable \
-    && rm -rf /var/lib/apt/lists/*
-
-# 3. Installa ChromeDriver (scegli una versione compatibile, per es. 131)
+RUN apt-get update && apt-get install -y --no-install-recommends wget gnupg curl unzip ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-linux-signing-keyring.gpg && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux-signing-keyring.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && apt-get update && apt-get install -y --no-install-recommends google-chrome-stable && rm -rf /var/lib/apt/lists/*
 ENV CHROMEDRIVER_VERSION=131.0.6778.85
-
-RUN wget -q "https://storage.googleapis.com/chromedriver-public/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip" -O /tmp/chromedriver.zip \
-    && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
-    && mv /usr/local/bin/chromedriver-linux64 /usr/local/bin/chromedriver \
-    && chmod +x /usr/local/bin/chromedriver \
-    && rm /tmp/chromedriver.zip
-
-# Installa Selenium
+RUN wget -q "https://storage.googleapis.com/chromedriver-public/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip" -O /tmp/chromedriver.zip && unzip /tmp/chromedriver.zip -d /usr/local/bin/ && mv /usr/local/bin/chromedriver-linux64 /usr/local/bin/chromedriver && chmod +x /usr/local/bin/chromedriver && rm /tmp/chromedriver.zip
 RUN pip install --no-cache-dir selenium
-
-# Imposta la directory di lavoro
 WORKDIR /app
-
-# Copia i file nella directory di lavoro
 COPY . /app
-
-#creare una cartella che si chiama reports
-RUN mkdir reports
-
-# Installa le dipendenze specificate in requirements.txt
-RUN python -m pip install --no-cache-dir -r requirements.txt
-
-RUN --mount=type=secret,id=API_OPENAI \
-    export OPENAI_KEY=$(cat /run/secrets/API_OPENAI)
-
-# Comando di default: avvia una shell Python interattiva
+RUN mkdir -p /app/reports
+RUN if [ -f requirements.txt ]; then python -m pip install --no-cache-dir -r requirements.txt; fi
+ENV OPENAI_KEY=""
 CMD ["python"]
