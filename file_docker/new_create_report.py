@@ -355,15 +355,10 @@ def download_dati(
     # zoom = 4 per i comuni
     # zoom = 5 per le centraline
 
-    print("Data inizio prima della localizzazione:", datainizio)
-    print("Data fine prima della localizzazione:", datafine)
 
     # localizzare datainizio e datafine
     datainizio = pytz.timezone(tz).localize(datainizio)
     datafine = pytz.timezone(tz).localize(datafine)
-
-    print("Data inizio dopo la localizzazione:", datainizio)
-    print("Data fine dopo la localizzazione:", datafine)
 
     # Data a partire dalla quale si richiedono i dati. Il formato è del tipo anno-mese-giorno separati da "-".
     start_date = datainizio.strftime("%Y-%m-%dT%H:%M:%S%z").replace("+", "%2B")
@@ -420,9 +415,9 @@ def download_dati(
         if zoom >= 4:
             url += "&squareID=" + place["squareID"]
 
-    print("-------------------")
-    print(url)
-    print("-------------------")
+    # print("-------------------")
+    # print(url)
+    # print("-------------------")
 
     # Richiesta GET
     req = requests.get(url)
@@ -487,8 +482,6 @@ def analisi_sforamenti(
 
     df.columns = df.columns.str.replace(r"\[.*\]", "", regex=True).str.strip()
 
-    # Mostra le nuove intestazioni
-    print(df.columns)
 
     for inquinante, limite in lim.items():
         if inquinante in df.keys():
@@ -542,12 +535,8 @@ def retrieve_project_by_id(apikey: str, project_id: str) -> dict:
 def get_start_end_date(freq: str, pro: dict = {}, dati=False):
     data_focus = datetime.now()
 
-    print("Data focus iniziale:", data_focus)
-
     if "datastart" in pro.keys():
         data_focus = pro["datastart"]
-
-    print("Data focus utilizzata:", data_focus)
 
     datainizio = pytz.timezone(tz).localize(
         data_focus.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -555,9 +544,6 @@ def get_start_end_date(freq: str, pro: dict = {}, dati=False):
     datafine = pytz.timezone(tz).localize(
         data_focus.replace(hour=23, minute=59, second=59, microsecond=0)
     )
-
-    print("Data inizio iniziale:", datainizio)
-    print("Data fine iniziale:", datafine)
 
     if freq == "giornalieri":
         datainizio = (data_focus - timedelta(days=1)).replace(
@@ -646,9 +632,6 @@ def get_start_end_date(freq: str, pro: dict = {}, dati=False):
             second=59,
             microsecond=0,
         )
-
-    print("Data inizio finale:", datainizio)
-    print("Data fine finale:", datafine)
 
     return datainizio, datafine
 
@@ -816,10 +799,6 @@ def info_centralina(req_centr: str) -> dict:
     apikey = "WDBNX4IUF66C"
     url = f"{server}:5002/informazioni_centralina"
     req = requests.post(url, {"apikey": apikey, "ID": req_centr})
-
-    print({"apikey": apikey, "ID": req_centr})
-
-    print(req.json())
 
     info_ssq = req.json()["result"]
 
@@ -1446,7 +1425,6 @@ def conteggio_sforamenti(
             datainizio, datafine = get_start_end_date(freq)
 
         dati = download_dati(place, datainizio, datafine, type_dato, zoo, "[]")
-        print(f"Lunghezza variabile dati: {len(dati)}")
         # Converte lo stream di byte in un oggetto leggibile da Pandas
         csv_data = BytesIO(dati)
 
@@ -1482,9 +1460,7 @@ def conteggio_sforamenti(
                     count = len(
                         df_mese[df_mese[inquinante] > limiti_inquinanti[nome_inq]]
                     )
-                    print(
-                        f"Numero di sforamenti di {nomi_inquinanti[nome_inq]} nel mese {mese}: {count}"
-                    )
+
                     df_sforamenti.at[mese, nomi_inquinanti[nome_inq]] = count
 
         # Crea un foglio di stile per il testo all'interno delle celle
