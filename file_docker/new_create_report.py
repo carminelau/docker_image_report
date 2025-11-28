@@ -313,6 +313,7 @@ def download_dati(place: dict, datainizio: datetime, datafine: datetime, req_typ
     # print("-------------------")
     # Richiesta GET
     req = requests.get(url)
+    print("Stato richiesta download dati:", req.status_code)
 
     result = ""
     if "\"response_code\":300" in req.text:
@@ -1103,7 +1104,7 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
             datainizio, datafine = get_start_end_date(freq)
 
         dati = download_dati(place, datainizio, datafine, type_dato, zoo, "[]")
-
+        print("Lunghezza variabile dati: " + len(dati))
         # Converte lo stream di byte in un oggetto leggibile da Pandas
         csv_data = BytesIO(dati)
 
@@ -1733,8 +1734,7 @@ for prog in progetti:
 
                     pdf1 = genera_Pagina_Iniziale(proj=prog, freq=f)
 
-                    #stampa i dati che vengono passati alla funzione conteggio_sforamenti
-                    print(prog["luoghi"], datastart, datafinish, "hourly", prog["zoom"], f)
+
                     conteggio_sforamenti(places=prog["luoghi"], datainizio=datastart,
                                          datafine=datafinish, type="hourly", zoo=prog["zoom"], freq=f)
 
