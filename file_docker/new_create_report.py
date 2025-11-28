@@ -10,7 +10,15 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import ParagraphStyle
-from reportlab.platypus import Paragraph, Frame, ListFlowable, ListItem, Table, TableStyle, SimpleDocTemplate
+from reportlab.platypus import (
+    Paragraph,
+    Frame,
+    ListFlowable,
+    ListItem,
+    Table,
+    TableStyle,
+    SimpleDocTemplate,
+)
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfgen import canvas
 from PyPDF2 import PdfFileReader, PdfFileWriter, PdfReader, PdfMerger, PdfWriter
@@ -35,55 +43,78 @@ ABSOLUTE_PATH_REPORT = os.path.join(ABSOLUTE_PATH, "reports")
 
 server = "https://square.sensesquare.eu"
 
-nomi_inquinanti = {"pm2_5": "PM2.5", "pm10": "PM10", "co": "CO",
-                   "no2": "NO2", "o3": "O3", "so2": "SO2", "pm1": "PM1", "temperatura": "Temperatura", "umidita": "Umidità", "aqi": "AQI"}
+nomi_inquinanti = {
+    "pm2_5": "PM2.5",
+    "pm10": "PM10",
+    "co": "CO",
+    "no2": "NO2",
+    "o3": "O3",
+    "so2": "SO2",
+    "pm1": "PM1",
+    "temperatura": "Temperatura",
+    "umidita": "Umidità",
+    "aqi": "AQI",
+}
 
-colori_centraline = ["#ff9800", "#4caf50", "#26a69a", "#2196f3",
-                     "#673ab7", "#9c27b0", "#f06292", "#8d6e63", "#ffeb3b"]
+colori_centraline = [
+    "#ff9800",
+    "#4caf50",
+    "#26a69a",
+    "#2196f3",
+    "#673ab7",
+    "#9c27b0",
+    "#f06292",
+    "#8d6e63",
+    "#ffeb3b",
+]
 
-limiti_inquinanti = {"pm2_5": 25, "pm10": 50, "co": 10,
-                     "no2": 200, "o3": 120, "so2": 350, "pm1": 10, "temperatura": 40, "umidita": 80, "aqi": 100}
+limiti_inquinanti = {
+    "pm2_5": 25,
+    "pm10": 50,
+    "co": 10,
+    "no2": 200,
+    "o3": 120,
+    "so2": 350,
+    "pm1": 10,
+    "temperatura": 40,
+    "umidita": 80,
+    "aqi": 100,
+}
 
-ordine_inquinanti = ["aqi", "pm10", "pm2_5", "pm1",
-                     "co", "no2", "o3", "so2", "temperatura", "umidita"]
+ordine_inquinanti = [
+    "aqi",
+    "pm10",
+    "pm2_5",
+    "pm1",
+    "co",
+    "no2",
+    "o3",
+    "so2",
+    "temperatura",
+    "umidita",
+]
 
-pdfmetrics.registerFont(TTFont('Arial', f'{ABSOLUTE_PATH_FONT}/Arial.ttf'))
+pdfmetrics.registerFont(TTFont("Arial", f"{ABSOLUTE_PATH_FONT}/Arial.ttf"))
 pdfmetrics.registerFont(
-    TTFont('Times New Roman', f'{ABSOLUTE_PATH_FONT}/times-new-roman.ttf'))
-pdfmetrics.registerFont(
-    TTFont('Calibri', f'{ABSOLUTE_PATH_FONT}/calibrii.ttf'))
-pdfmetrics.registerFont(
-    TTFont('Poppins', f'{ABSOLUTE_PATH_FONT}/Poppins-Black.ttf'))
+    TTFont("Times New Roman", f"{ABSOLUTE_PATH_FONT}/times-new-roman.ttf")
+)
+pdfmetrics.registerFont(TTFont("Calibri", f"{ABSOLUTE_PATH_FONT}/calibrii.ttf"))
+pdfmetrics.registerFont(TTFont("Poppins", f"{ABSOLUTE_PATH_FONT}/Poppins-Black.ttf"))
 
 tz = "Europe/Rome"
 
 # Creazione degli stili
 styles = getSampleStyleSheet()
-normal_style = styles['Normal']
-heading_style = styles['Heading2']
-bullet_style = styles['Bullet']
+normal_style = styles["Normal"]
+heading_style = styles["Heading2"]
+bullet_style = styles["Bullet"]
 
 lim = {
-    "no2": {
-        "media": "oraria",
-        "limite": 200
-    },
-    "co": {
-        "media": "oraria",
-        "limite": 10
-    },
-    "pm10": {
-        "media": "oraria",
-        "limite": 50
-    },
-    "pm2_5": {
-        "media": "oraria",
-        "limite": 25
-    },
-    "o3": {
-        "media": "oraria",
-        "limite": 180
-    }
+    "no2": {"media": "oraria", "limite": 200},
+    "co": {"media": "oraria", "limite": 10},
+    "pm10": {"media": "oraria", "limite": 50},
+    "pm2_5": {"media": "oraria", "limite": 25},
+    "o3": {"media": "oraria", "limite": 180},
 }
 
 
@@ -91,10 +122,7 @@ def open_file(file_name):
     return json.loads(open(f"{ABSOLUTE_PATH_LANG}/{file_name}", "r").read())
 
 
-avail_lang = {
-    "it": open_file("italian.json"),
-    "en": open_file("english.json")
-}
+avail_lang = {"it": open_file("italian.json"), "en": open_file("english.json")}
 
 
 def retrieve_project(apikey: str) -> list:
@@ -109,16 +137,16 @@ def create_air_quality_table():
     styles = getSampleStyleSheet()
 
     # Funzione per applicare Paragraph a tutto il testo della tabella
-    def create_paragraph(text, style_name='Normal'):
+    def create_paragraph(text, style_name="Normal"):
         # Imposta il colore del testo per lo stile Heading3
-        if style_name == 'Heading3':
-            styles['Heading3'].textColor = colors.whitesmoke
-            styles['Heading3'].fontName = 'Helvetica-Bold'
-            styles['Heading3'].fontSize = 8
+        if style_name == "Heading3":
+            styles["Heading3"].textColor = colors.whitesmoke
+            styles["Heading3"].fontName = "Helvetica-Bold"
+            styles["Heading3"].fontSize = 8
             styles[style_name].leading = 8
         else:
             styles[style_name].textColor = colors.black
-            styles[style_name].fontName = 'Helvetica'
+            styles[style_name].fontName = "Helvetica"
             styles[style_name].fontSize = 6
             # riduci interlinea
             styles[style_name].leading = 6
@@ -126,22 +154,76 @@ def create_air_quality_table():
 
     # Dati della tabella con Paragraph applicato
     data = [
-        [create_paragraph('Inquinante', "Heading3"), create_paragraph('Descrizione', "Heading3"), create_paragraph(
-            'Unità di misura', "Heading3"), create_paragraph('Intervallo di valutazione', "Heading3"), create_paragraph('Valore limite', "Heading3")],
-        [create_paragraph('NO2'), create_paragraph('Biossido di azoto'), create_paragraph('µg/m³'), create_paragraph(
-            'massima media oraria'), create_paragraph('Il valore orario di 200 µg/m³ non può essere superato più di 18 volte nell\'anno')],
-        [create_paragraph('CO'), create_paragraph('Monossido di carbonio'), create_paragraph('mg/m³'), create_paragraph(
-            'massima media oraria'), create_paragraph('Il valore massimo della media mobile calcolata sulle 8 ore non può superare i 10 mg/m³')],
-        [create_paragraph('PM10'), create_paragraph('Polveri sospese minori di 10µm'), create_paragraph('µg/m³'), create_paragraph(
-            'media giornaliera'), create_paragraph('Il valore giornaliero di 50 µg/m³ non può essere superato più di 35 volte nell\'anno')],
-        [create_paragraph('PM2.5'), create_paragraph('Polveri sospese minori di 2,5µm'), create_paragraph(
-            'µg/m³'), create_paragraph('media annuale'), create_paragraph('Il valore medio annuale di 25 µg/m³ non può essere superato nell\'anno')],
-        [create_paragraph('O3'), create_paragraph('Ozono'), create_paragraph('µg/m³'), create_paragraph('massima media oraria'),
-         create_paragraph('Il valore orario della soglia di informazione è pari a 180 µg/m³. La soglia di allarme è pari a 240 µg/m³')],
-        [create_paragraph('C6H6'), create_paragraph('Benzene'), create_paragraph('µg/m³'), create_paragraph(
-            'media annuale'), create_paragraph('Il valore medio annuale di 5 µg/m³ non può essere superato nell\'anno')],
-        [create_paragraph('SO2'), create_paragraph('Biossido di zolfo'), create_paragraph('µg/m³'), create_paragraph(
-            'massima media oraria'), create_paragraph('Il valore orario di 350 µg/m³ non può essere superato più di 24 volte nell\'anno')],
+        [
+            create_paragraph("Inquinante", "Heading3"),
+            create_paragraph("Descrizione", "Heading3"),
+            create_paragraph("Unità di misura", "Heading3"),
+            create_paragraph("Intervallo di valutazione", "Heading3"),
+            create_paragraph("Valore limite", "Heading3"),
+        ],
+        [
+            create_paragraph("NO2"),
+            create_paragraph("Biossido di azoto"),
+            create_paragraph("µg/m³"),
+            create_paragraph("massima media oraria"),
+            create_paragraph(
+                "Il valore orario di 200 µg/m³ non può essere superato più di 18 volte nell'anno"
+            ),
+        ],
+        [
+            create_paragraph("CO"),
+            create_paragraph("Monossido di carbonio"),
+            create_paragraph("mg/m³"),
+            create_paragraph("massima media oraria"),
+            create_paragraph(
+                "Il valore massimo della media mobile calcolata sulle 8 ore non può superare i 10 mg/m³"
+            ),
+        ],
+        [
+            create_paragraph("PM10"),
+            create_paragraph("Polveri sospese minori di 10µm"),
+            create_paragraph("µg/m³"),
+            create_paragraph("media giornaliera"),
+            create_paragraph(
+                "Il valore giornaliero di 50 µg/m³ non può essere superato più di 35 volte nell'anno"
+            ),
+        ],
+        [
+            create_paragraph("PM2.5"),
+            create_paragraph("Polveri sospese minori di 2,5µm"),
+            create_paragraph("µg/m³"),
+            create_paragraph("media annuale"),
+            create_paragraph(
+                "Il valore medio annuale di 25 µg/m³ non può essere superato nell'anno"
+            ),
+        ],
+        [
+            create_paragraph("O3"),
+            create_paragraph("Ozono"),
+            create_paragraph("µg/m³"),
+            create_paragraph("massima media oraria"),
+            create_paragraph(
+                "Il valore orario della soglia di informazione è pari a 180 µg/m³. La soglia di allarme è pari a 240 µg/m³"
+            ),
+        ],
+        [
+            create_paragraph("C6H6"),
+            create_paragraph("Benzene"),
+            create_paragraph("µg/m³"),
+            create_paragraph("media annuale"),
+            create_paragraph(
+                "Il valore medio annuale di 5 µg/m³ non può essere superato nell'anno"
+            ),
+        ],
+        [
+            create_paragraph("SO2"),
+            create_paragraph("Biossido di zolfo"),
+            create_paragraph("µg/m³"),
+            create_paragraph("massima media oraria"),
+            create_paragraph(
+                "Il valore orario di 350 µg/m³ non può essere superato più di 24 volte nell'anno"
+            ),
+        ],
     ]
 
     # Definisci larghezze delle colonne proporzionate per A4 verticale
@@ -153,23 +235,25 @@ def create_air_quality_table():
     table = Table(data, colWidths=col_widths, rowHeights=row_heights)
 
     # Applica lo stile alla tabella
-    style = TableStyle([
-        # Sfondo per la riga di intestazione
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        # Colore del testo dell'intestazione
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Allinea il testo al centro
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Font dell'intestazione
-        ('FONTSIZE', (0, 0), (-1, 0), 8),  # Dimensione font dell'intestazione
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 8),  # Padding per l'intestazione
-        # Dimensione font delle righe dei dati
-        ('FONTSIZE', (0, 1), (-1, -1), 6),
-        # Sfondo per le celle dei dati
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Aggiungi griglia nera
-        # Allinea verticalmente il testo
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-    ])
+    style = TableStyle(
+        [
+            # Sfondo per la riga di intestazione
+            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+            # Colore del testo dell'intestazione
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),  # Allinea il testo al centro
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),  # Font dell'intestazione
+            ("FONTSIZE", (0, 0), (-1, 0), 8),  # Dimensione font dell'intestazione
+            ("BOTTOMPADDING", (0, 0), (-1, 0), 8),  # Padding per l'intestazione
+            # Dimensione font delle righe dei dati
+            ("FONTSIZE", (0, 1), (-1, -1), 6),
+            # Sfondo per le celle dei dati
+            ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),  # Aggiungi griglia nera
+            # Allinea verticalmente il testo
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ]
+    )
 
     table.setStyle(style)
 
@@ -177,27 +261,33 @@ def create_air_quality_table():
 
 
 def create_styled_paragraph(text):
-    if re.match(r'\*\*(.+)\*\*', text):  # Se il testo è racchiuso tra **, usa lo stile Heading1
-        return Paragraph(re.sub(r'\*\*(.+)\*\*', r'\1', text), getSampleStyleSheet()['Heading1'])
+    if re.match(
+        r"\*\*(.+)\*\*", text
+    ):  # Se il testo è racchiuso tra **, usa lo stile Heading1
+        return Paragraph(
+            re.sub(r"\*\*(.+)\*\*", r"\1", text), getSampleStyleSheet()["Heading1"]
+        )
     else:
-        return Paragraph(text, getSampleStyleSheet()['Normal'])
+        return Paragraph(text, getSampleStyleSheet()["Normal"])
+
 
 # Funzione per creare paragrafi formattati
 def format_paragraph(text):
     # Riconosce e converte i titoli in intestazioni
-    if re.match(r'\*\*(.+)\*\*', text):
+    if re.match(r"\*\*(.+)\*\*", text):
         # Rimuove i ** e applica lo stile di intestazione
-        return Paragraph(re.sub(r'\*\*(.+)\*\*', r'\1', text), heading_style)
+        return Paragraph(re.sub(r"\*\*(.+)\*\*", r"\1", text), heading_style)
     else:
         # Paragrafo normale
         return Paragraph(text, normal_style)
+
 
 # Funzione per riconoscere le liste puntate e formattarle
 def format_bullet_list(text_lines):
     list_items = []
     for line in text_lines:
-        list_items.append(ListItem(Paragraph(line.strip('* '), bullet_style)))
-    return ListFlowable(list_items, bulletType='bullet')
+        list_items.append(ListItem(Paragraph(line.strip("* "), bullet_style)))
+    return ListFlowable(list_items, bulletType="bullet")
 
 
 def translation(language, key, to_format="None"):
@@ -237,10 +327,8 @@ def translation_data(language: str, key: datetime, ora: bool = False):
 
 def path_templates() -> list:
     lista = []
-    lista.append(os.path.join(
-        ABSOLUTE_PATH, "templates", "Template_Iniziale.png"))
-    lista.append(os.path.join(
-        ABSOLUTE_PATH, "templates", "Template_Pagina.png"))
+    lista.append(os.path.join(ABSOLUTE_PATH, "templates", "Template_Iniziale.png"))
+    lista.append(os.path.join(ABSOLUTE_PATH, "templates", "Template_Pagina.png"))
 
     return lista
 
@@ -248,7 +336,14 @@ def path_templates() -> list:
 lista_template = path_templates()
 
 
-def download_dati(place: dict, datainizio: datetime, datafine: datetime, req_type, zoom: int, fonte: str):
+def download_dati(
+    place: dict,
+    datainizio: datetime,
+    datafine: datetime,
+    req_type,
+    zoom: int,
+    fonte: str,
+):
     apikey = "WDBNX4IUF66C"
 
     # Tipo di dati richiesti: medie giornaliere, medie orarie, medie al minuto, dati grezzi. I dati grezzi e le medie al minuto sono disponibili solo per zoom compreso tra 3 e 5 (inclusi).
@@ -277,7 +372,7 @@ def download_dati(place: dict, datainizio: datetime, datafine: datetime, req_typ
     end_date = datafine.strftime("%Y-%m-%dT%H:%M:%S%z").replace("+", "%2B")
 
     # formato dei dati: json, csv o xlsx
-    formato = 'csv'
+    formato = "csv"
 
     # Stringa contenente un array delle fonti delle quali si richiedono le medie. Se l’array non presenta alcun elemento, la media restituita conterrà i contributi di tutte le fonti a disposizione per il luogo scelto
     # fonte = '[]' significa che si vogliono tutte le fonti disponibili
@@ -292,8 +387,22 @@ def download_dati(place: dict, datainizio: datetime, datafine: datetime, req_typ
     # ESEMPIO METODO GET
 
     # Creazione dell'url per il metodo GET concatenando i vari parametri che ci servono
-    url = f"{server}:5001/download?apikey=" + apikey + "&req_type="+req_type+"&zoom=" + str(zoom) + "&format=" + formato + "&fonte=" + \
-        fonte + "&start=" + start_date + "&end=" + end_date
+    url = (
+        f"{server}:5001/download?apikey="
+        + apikey
+        + "&req_type="
+        + req_type
+        + "&zoom="
+        + str(zoom)
+        + "&format="
+        + formato
+        + "&fonte="
+        + fonte
+        + "&start="
+        + start_date
+        + "&end="
+        + end_date
+    )
 
     zoom = int(zoom)
 
@@ -314,13 +423,13 @@ def download_dati(place: dict, datainizio: datetime, datafine: datetime, req_typ
     print("-------------------")
     print(url)
     print("-------------------")
-    
+
     # Richiesta GET
     req = requests.get(url)
     print("Stato richiesta download dati:", req.status_code)
 
     result = ""
-    if "\"response_code\":300" in req.text:
+    if '"response_code":300' in req.text:
         print("download Posposto")
         result = req.json()["result"]
         pending = True
@@ -336,8 +445,7 @@ def download_dati(place: dict, datainizio: datetime, datafine: datetime, req_typ
             time.sleep(10)
 
         url = f"{server}:5001/download_posposto"
-        req = requests.post(
-            url, {"apikey": apikey, "obj_id": result}, stream=True)
+        req = requests.post(url, {"apikey": apikey, "obj_id": result}, stream=True)
 
         print("Lunghezza contenuto dopo download posposto:", len(req.content))
         return req.content
@@ -357,11 +465,22 @@ def retrieve_project(apikey: str) -> list:
     return req.json()["result"]
 
 
-def analisi_sforamenti(luogo: dict, start: datetime, end: datetime, type_data: str, zoom: int, font: str, pro: False):
+def analisi_sforamenti(
+    luogo: dict,
+    start: datetime,
+    end: datetime,
+    type_data: str,
+    zoom: int,
+    font: str,
+    pro: False,
+):
     # Crea il DataFrame dal CSV
 
-    df = pd.read_csv(StringIO(download_dati(luogo, start, end,
-                     type_data, zoom, font).decode('utf-8')))
+    df = pd.read_csv(
+        StringIO(
+            download_dati(luogo, start, end, type_data, zoom, font).decode("utf-8")
+        )
+    )
 
     # Verifica sforamenti
     sforamenti = pd.DataFrame()
@@ -390,16 +509,20 @@ def analisi_sforamenti(luogo: dict, start: datetime, end: datetime, type_data: s
     if len(df_sforamenti) > 0:
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(
-            "Mi scrivi un testo dove descrivi i vari sforamenti che ci sono stati: (senza usare elenchi puntati) Indicando anche il nome del sensore e escludendo l'analisi sull'AQI ed il valore della timezone \n" + df_sforamenti.to_string())
+            "Mi scrivi un testo dove descrivi i vari sforamenti che ci sono stati: (senza usare elenchi puntati) Indicando anche il nome del sensore e escludendo l'analisi sull'AQI ed il valore della timezone \n"
+            + df_sforamenti.to_string()
+        )
     else:
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(
-            "Mi descrivi l'andamento dell'inquinamento dei seguenti dati: (senza usare elenchi puntati) Indicando anche il nome del sensore e escludendo l'analisi sull'AQI ed il valore della timezone\n" + df.to_string())
+            "Mi descrivi l'andamento dell'inquinamento dei seguenti dati: (senza usare elenchi puntati) Indicando anche il nome del sensore e escludendo l'analisi sull'AQI ed il valore della timezone\n"
+            + df.to_string()
+        )
 
-    lines = response.text.strip().split('\n')
+    lines = response.text.strip().split("\n")
 
     for line in lines:
-        if line.startswith('*'):  # Se è una lista puntata
+        if line.startswith("*"):  # Se è una lista puntata
             return format_bullet_list([line])
         else:
             return format_paragraph(line)
@@ -427,41 +550,63 @@ def get_start_end_date(freq: str, pro: dict = {}, dati=False):
     print("Data focus utilizzata:", data_focus)
 
     datainizio = pytz.timezone(tz).localize(
-        data_focus.replace(hour=0, minute=0, second=0, microsecond=0))
-    datafine = pytz.timezone(tz).localize(data_focus.replace(
-        hour=23, minute=59, second=59, microsecond=0))
-    
+        data_focus.replace(hour=0, minute=0, second=0, microsecond=0)
+    )
+    datafine = pytz.timezone(tz).localize(
+        data_focus.replace(hour=23, minute=59, second=59, microsecond=0)
+    )
+
     print("Data inizio iniziale:", datainizio)
     print("Data fine iniziale:", datafine)
 
     if freq == "giornalieri":
-        datainizio = (data_focus - timedelta(days=1)
-                      ).replace(hour=0, minute=0, second=0, microsecond=0)
-        datafine = (data_focus - timedelta(days=1)
-                    ).replace(hour=23, minute=59, second=59, microsecond=0)
+        datainizio = (data_focus - timedelta(days=1)).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        datafine = (data_focus - timedelta(days=1)).replace(
+            hour=23, minute=59, second=59, microsecond=0
+        )
     elif freq == "settimanali":
-        datainizio = (data_focus - timedelta(days=7)
-                      ).replace(hour=0, minute=0, second=0, microsecond=0)
-        datafine = (data_focus - timedelta(days=1)
-                    ).replace(hour=23, minute=59, second=59, microsecond=0)
+        datainizio = (data_focus - timedelta(days=7)).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        datafine = (data_focus - timedelta(days=1)).replace(
+            hour=23, minute=59, second=59, microsecond=0
+        )
     elif freq == "mensili":
-        datainizio = (data_focus - timedelta(days=30)
-                      ).replace(hour=0, minute=0, second=0, microsecond=0)
-        datafine = (data_focus - timedelta(days=1)
-                    ).replace(hour=23, minute=59, second=59, microsecond=0)
+        datainizio = (data_focus - timedelta(days=30)).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        datafine = (data_focus - timedelta(days=1)).replace(
+            hour=23, minute=59, second=59, microsecond=0
+        )
     elif freq == "custom":
 
         inizio = pro["intervallo"][0]
         fine = pro["intervallo"][1]
 
         if set(inizio.keys()) == set(["ora", "minuti"]):
-            datainizio = (data_focus - timedelta(days=1)
-                          ).replace(hour=int(inizio["ora"]), minute=int(inizio["minuti"]), second=0, microsecond=0)
-            datafine = (data_focus - timedelta(days=1)
-                        ).replace(hour=int(fine["ora"]), minute=int(fine["minuti"]), second=59, microsecond=0)
+            datainizio = (data_focus - timedelta(days=1)).replace(
+                hour=int(inizio["ora"]),
+                minute=int(inizio["minuti"]),
+                second=0,
+                microsecond=0,
+            )
+            datafine = (data_focus - timedelta(days=1)).replace(
+                hour=int(fine["ora"]),
+                minute=int(fine["minuti"]),
+                second=59,
+                microsecond=0,
+            )
             if dati:
                 dati = download_dati(
-                    pro["luoghi"][0], datainizio, datafine, "hourly", str(int(pro["zoom"])), "[]")
+                    pro["luoghi"][0],
+                    datainizio,
+                    datafine,
+                    "hourly",
+                    str(int(pro["zoom"])),
+                    "[]",
+                )
                 # Converte lo stream di byte in un oggetto leggibile da Pandas
                 csv_data = BytesIO(dati)
 
@@ -474,16 +619,33 @@ def get_start_end_date(freq: str, pro: dict = {}, dati=False):
 
                         # prendere il timestamp del primo e dell'ultimo valore
                         datainizio = datetime.strptime(
-                            df["timestamp"][0], '%Y-%m-%dT%H:%M:%S%z')
+                            df["timestamp"][0], "%Y-%m-%dT%H:%M:%S%z"
+                        )
                         datafine = datetime.strptime(
-                            df["timestamp"][len(df["timestamp"])-1], '%Y-%m-%dT%H:%M:%S%z')
+                            df["timestamp"][len(df["timestamp"]) - 1],
+                            "%Y-%m-%dT%H:%M:%S%z",
+                        )
 
     elif freq == "annuali":
         # mettere come datainizio primo gennaio e come fine 31 dicembre andando a cambiare solo l'anno in base a quello corrente -1 con la replace
-        datainizio = (data_focus.replace(year=data_focus.year-1,
-                      month=1, day=1, hour=0, minute=0, second=0, microsecond=0))
-        datafine = (data_focus.replace(year=data_focus.year-1, month=12, day=31, hour=23,
-                    minute=59, second=59, microsecond=0))
+        datainizio = data_focus.replace(
+            year=data_focus.year - 1,
+            month=1,
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+        datafine = data_focus.replace(
+            year=data_focus.year - 1,
+            month=12,
+            day=31,
+            hour=23,
+            minute=59,
+            second=59,
+            microsecond=0,
+        )
 
     print("Data inizio finale:", datainizio)
     print("Data fine finale:", datafine)
@@ -512,36 +674,80 @@ def FrameHeaderAndBody(pdf, stile, fontn, campi, freq):
     undertitle = get_undertitle(freq, campi)
     flow_obj = []
     # Frame dedicati al titolo e sotto titolo(data)
-    flow_obj.append(Paragraph("Report "+campi['alias_progetto'], ParagraphStyle(
-        name='titolo', fontSize=fontn, leading=fontn * 1.2, fontName=stile)))
+    flow_obj.append(
+        Paragraph(
+            "Report " + campi["alias_progetto"],
+            ParagraphStyle(
+                name="titolo", fontSize=fontn, leading=fontn * 1.2, fontName=stile
+            ),
+        )
+    )
     frameTitolo = Frame(30, 240, 570, 300, showBoundary=0)
     frameTitolo.addFromList(flow_obj, pdf)
 
-    flow_obj.append(Paragraph(undertitle, ParagraphStyle(
-        name='data', fontSize=fontn-15, leading=25 * 1.2, fontName=stile)))
-    frameData = Frame(30, frameTitolo._y -
-                      125, 575, 120, showBoundary=0)
+    flow_obj.append(
+        Paragraph(
+            undertitle,
+            ParagraphStyle(
+                name="data", fontSize=fontn - 15, leading=25 * 1.2, fontName=stile
+            ),
+        )
+    )
+    frameData = Frame(30, frameTitolo._y - 125, 575, 120, showBoundary=0)
     frameData.addFromList(flow_obj, pdf)
     # Frame che trovi in basso a sinistra e destra
-    flow_obj.append(Paragraph(translation(LINGUA, "report_automatically_generated"),
-                    ParagraphStyle(name='midleft', fontSize=12, alignment=0, textColor="white", fontName=stile)))
+    flow_obj.append(
+        Paragraph(
+            translation(LINGUA, "report_automatically_generated"),
+            ParagraphStyle(
+                name="midleft",
+                fontSize=12,
+                alignment=0,
+                textColor="white",
+                fontName=stile,
+            ),
+        )
+    )
     frameSinistro_basso = Frame(20, 120, 315, 50, showBoundary=0)
     frameSinistro_basso.addFromList(flow_obj, pdf)
 
-    flow_obj.append(Paragraph("Sense Square S.r.l", ParagraphStyle(
-        name='midright', fontSize=11, alignment=2, textColor="white", fontName=stile)))
+    flow_obj.append(
+        Paragraph(
+            "Sense Square S.r.l",
+            ParagraphStyle(
+                name="midright",
+                fontSize=11,
+                alignment=2,
+                textColor="white",
+                fontName=stile,
+            ),
+        )
+    )
     framedestro_tit = Frame(430, 130, 100, 30, showBoundary=0)
     framedestro_tit.addFromList(flow_obj, pdf)
 
-    flow_obj.append(Paragraph(translation(LINGUA, "info_ssq"),
-                    ParagraphStyle(name='midrighttext', fontSize=9, alignment=2, textColor="white", fontName=stile)))
+    flow_obj.append(
+        Paragraph(
+            translation(LINGUA, "info_ssq"),
+            ParagraphStyle(
+                name="midrighttext",
+                fontSize=9,
+                alignment=2,
+                textColor="white",
+                fontName=stile,
+            ),
+        )
+    )
     frameDestro_basso = Frame(340, 30, 230, 120, showBoundary=0)
     frameDestro_basso.addFromList(flow_obj, pdf)
+
 
 # Funzione per aggiungere un PDF come sfondo ad un altro PDF
 def merge_pdfs_background(background_pdf_path, content_pdf_path, output_pdf_path):
     # Apri il PDF di sfondo e il PDF con i contenuti
-    with open(background_pdf_path, "rb") as bg_pdf_file, open(content_pdf_path, "rb") as content_pdf_file:
+    with open(background_pdf_path, "rb") as bg_pdf_file, open(
+        content_pdf_path, "rb"
+    ) as content_pdf_file:
         bg_pdf = PyPDF2.PdfReader(bg_pdf_file)
         content_pdf = PyPDF2.PdfReader(content_pdf_file)
 
@@ -567,18 +773,36 @@ def merge_pdfs_background(background_pdf_path, content_pdf_path, output_pdf_path
 def FrameFooter(pdf, stile):
     flow_obj = []
     # Frame che riguardano il Footer
-    flow_obj.append(Paragraph("Corso Garibaldi, 33, Salerno (SA), 84123", ParagraphStyle(
-        name='footer1', fontSize=9, textColor="white", fontName=stile)))
+    flow_obj.append(
+        Paragraph(
+            "Corso Garibaldi, 33, Salerno (SA), 84123",
+            ParagraphStyle(
+                name="footer1", fontSize=9, textColor="white", fontName=stile
+            ),
+        )
+    )
     frame_footer = Frame(20, 5, 190, 30, showBoundary=0)
     frame_footer.addFromList(flow_obj, pdf)
 
-    flow_obj.append(Paragraph("P.IVA/C.F.: IT05466060653  info@sensesquare.eu",
-                    ParagraphStyle(name='footer2', fontSize=9, textColor="white", fontName=stile)))
+    flow_obj.append(
+        Paragraph(
+            "P.IVA/C.F.: IT05466060653  info@sensesquare.eu",
+            ParagraphStyle(
+                name="footer2", fontSize=9, textColor="white", fontName=stile
+            ),
+        )
+    )
     frame_footer_cen = Frame(220, 5, 240, 30, showBoundary=0)
     frame_footer_cen.addFromList(flow_obj, pdf)
 
-    flow_obj.append(Paragraph("www.sensesquare.eu", ParagraphStyle(
-        name='footer3', fontSize=9, textColor="white", fontName=stile)))
+    flow_obj.append(
+        Paragraph(
+            "www.sensesquare.eu",
+            ParagraphStyle(
+                name="footer3", fontSize=9, textColor="white", fontName=stile
+            ),
+        )
+    )
     frame_footer_des = Frame(470, 5, 140, 30, showBoundary=0)
     frame_footer_des.addFromList(flow_obj, pdf)
 
@@ -594,9 +818,9 @@ def info_centralina(req_centr: str) -> dict:
     req = requests.post(url, {"apikey": apikey, "ID": req_centr})
 
     print({"apikey": apikey, "ID": req_centr})
-    
+
     print(req.json())
-    
+
     info_ssq = req.json()["result"]
 
     if info_ssq["type"] < 2:
@@ -607,11 +831,19 @@ def info_centralina(req_centr: str) -> dict:
             info_osm = req.json()
         except:
             info_osm = {
-                "error": "Errore nell'ottenere le informazioni da OpenStreetMap"}
+                "error": "Errore nell'ottenere le informazioni da OpenStreetMap"
+            }
 
         url = f"{server}:5001/geodecode"
         req = requests.post(
-            url, {"apikey": apikey, "lat": info_ssq["lat"], "lon": info_ssq["lon"], "zoom": 4})
+            url,
+            {
+                "apikey": apikey,
+                "lat": info_ssq["lat"],
+                "lon": info_ssq["lon"],
+                "zoom": 4,
+            },
+        )
 
         info_ssq["geodecode"] = req.json()
         if "error" not in info_osm:
@@ -619,7 +851,9 @@ def info_centralina(req_centr: str) -> dict:
                 info_ssq["indirizzo"] = "Via Ospedaletto, 331"
             else:
                 try:
-                    info_ssq["indirizzo"] = f"{info_osm['address']['road']}, {info_osm['address']['house_number']}"
+                    info_ssq["indirizzo"] = (
+                        f"{info_osm['address']['road']}, {info_osm['address']['house_number']}"
+                    )
                 except:
                     info_ssq["indirizzo"] = f"{info_osm['address']['road']}"
 
@@ -630,15 +864,41 @@ def get_picture_geomap_centralina(nome_centralina: str):
 
     info_centr = info_centralina(nome_centralina)
 
-    conf = {"source": {"type": "device", "value": {"key": info_centr["ID"], "value": info_centr["ID"], "name": info_centr["ID"]}}, "points": [{"position": {"lat": info_centr["lat"], "lng": info_centr["lon"]},
-                                                                                                                                               "color": "red"}], "parameter": "aqi", "map": "standard",
-            "dataSource": "prediction", "period": "giorno", "viewMode": "panoramic", "fillOpacity": 60, "_defaultStateKey": ["source", "value", "name"], "_timer_refresh": -1}
+    conf = {
+        "source": {
+            "type": "device",
+            "value": {
+                "key": info_centr["ID"],
+                "value": info_centr["ID"],
+                "name": info_centr["ID"],
+            },
+        },
+        "points": [
+            {
+                "position": {"lat": info_centr["lat"], "lng": info_centr["lon"]},
+                "color": "red",
+            }
+        ],
+        "parameter": "aqi",
+        "map": "standard",
+        "dataSource": "prediction",
+        "period": "giorno",
+        "viewMode": "panoramic",
+        "fillOpacity": 60,
+        "_defaultStateKey": ["source", "value", "name"],
+        "_timer_refresh": -1,
+    }
 
     wpg = widget_picture_generator("WDBNX4IUF66C")
     wpg.get_widget_picture_file(
-        f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png", "widget_geomap_v2", conf, timeout=11)
+        f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png",
+        "widget_geomap_v2",
+        conf,
+        timeout=11,
+    )
     # Destroy the driver
     wpg.destroy()
+
 
 # da modificare per farlo funzionare per i luoghi
 def get_picture_geomap_place(luoghi: list, zoom: int):
@@ -651,7 +911,8 @@ def get_picture_geomap_place(luoghi: list, zoom: int):
         url = "http://188.166.29.27:5001/info_polygon"
 
         req = requests.post(
-            url, {"apikey": "WDBNX4IUF66C", "zoom": zoom, "path": json.dumps(luogo)})
+            url, {"apikey": "WDBNX4IUF66C", "zoom": zoom, "path": json.dumps(luogo)}
+        )
 
         info_poly = req.json()["result"]
 
@@ -663,28 +924,42 @@ def get_picture_geomap_place(luoghi: list, zoom: int):
                 "zoom": lista_zoom_geomap[zoom],
                 "center": info_poly["center"],
                 "geolevel": zoom,
-                "bounds": info_poly["bounds"]
+                "bounds": info_poly["bounds"],
             },
             "map_type": "Esri.WorldImagery",
             "prediction": True,
             "source_type": "all",
-            "_defaultStateKey": [
-                "path",
-                "name"
-            ],
-            "_timer_refresh": -1
+            "_defaultStateKey": ["path", "name"],
+            "_timer_refresh": -1,
         }
 
         wpg = widget_picture_generator("WDBNX4IUF66C")
         wpg.get_widget_picture_file(
-            f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png", "widget_geomap", conf, timeout=10)
+            f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png",
+            "widget_geomap",
+            conf,
+            timeout=10,
+        )
         # Destroy the driver
         wpg.destroy()
 
+
 # creare una funzione che dato un vettore di json, controlla i campi della chiave color e restituisce un colore che non è già stato usato
 def get_color(arr: list) -> str:
-    colori = ["#ff9800", "#4caf50", "#26a69a", "#2196f3",
-              "#673ab7", "#9c27b0", "#f06292", "#8d6e63", "#ffeb3b", "#ff5722", "#795548", "#607d8b"]
+    colori = [
+        "#ff9800",
+        "#4caf50",
+        "#26a69a",
+        "#2196f3",
+        "#673ab7",
+        "#9c27b0",
+        "#f06292",
+        "#8d6e63",
+        "#ffeb3b",
+        "#ff5722",
+        "#795548",
+        "#607d8b",
+    ]
     if len(arr) == 0:
         return colori[0]
 
@@ -738,7 +1013,7 @@ def get_picture_analyze_path(centraline=None, freq="", pro: dict = {}):
         "date": datainizio.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "mapStyle": "standard",
         "selectedPoints": {},
-        "sources": []
+        "sources": [],
     }
 
     legenda = {}
@@ -750,18 +1025,19 @@ def get_picture_analyze_path(centraline=None, freq="", pro: dict = {}):
             "name": centralina,
             "parameter": "none",
             "type": "device",
-            "value": {
-                    "name": centralina,
-                    "value": centralina
-            },
-            "width": "6"
+            "value": {"name": centralina, "value": centralina},
+            "width": "6",
         }
         conf["sources"].append(agg)
         legenda.update({centralina: agg["color"]})
 
     wpg = widget_picture_generator("WDBNX4IUF66C")
     wpg.get_widget_picture_file(
-        f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png', "tool_analizza_percorsi", conf, timeout=11)
+        f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png',
+        "tool_analizza_percorsi",
+        conf,
+        timeout=11,
+    )
     # Destroy the driver
     wpg.destroy()
 
@@ -806,40 +1082,45 @@ def get_picture_analyze_data(centraline=None, freq="", pro: dict = {}):
                     "showDots": True,
                     "guideValue": limiti_inquinanti[inquinante],
                     "name": f"Limite {nomi_inquinanti[inquinante]}",
-                    "id": "_s9rp7lpfn"
+                    "id": "_s9rp7lpfn",
                 }
             ],
             "selectedGranularity": typef,
             "showGrid": False,
             "showLegend": True,
             "selectedRatio": 1.3333333333333333,
-            "showChartFullscreen": True
+            "showChartFullscreen": True,
         }
 
         if freq == "custom":
             conf["from"] = datainizio.strftime("%Y-%m-%dT%H:%M:%S%z")
-            conf["to"] = datafine.replace(
-                minute=59).strftime("%Y-%m-%dT%H:%M:%S%z")
+            conf["to"] = datafine.replace(minute=59).strftime("%Y-%m-%dT%H:%M:%S%z")
         else:
             conf["from"] = datainizio.replace(
-                hour=0, minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M:%S%z")
+                hour=0, minute=0, second=0, microsecond=0
+            ).strftime("%Y-%m-%dT%H:%M:%S%z")
             conf["to"] = datafine.replace(
-                hour=23, minute=59, second=59, microsecond=0).strftime("%Y-%m-%dT%H:%M:%S%z")
+                hour=23, minute=59, second=59, microsecond=0
+            ).strftime("%Y-%m-%dT%H:%M:%S%z")
 
         if pro["zoom"] == 5:
             for centralina in centraline:
-                conf["sources"].append({
-                    "type": "device",
-                    "source": centralina,
-                    "parameter": inquinante,
-                    "chartType": "line",
-                    "yAxis": "y",
-                    "selectedColor": colori_centraline[centraline.index(centralina)],
-                    "smoothLine": True,
-                    "showDots": True,
-                    "name": f"{centralina}",
-                    "id": f"{centralina}"
-                })
+                conf["sources"].append(
+                    {
+                        "type": "device",
+                        "source": centralina,
+                        "parameter": inquinante,
+                        "chartType": "line",
+                        "yAxis": "y",
+                        "selectedColor": colori_centraline[
+                            centraline.index(centralina)
+                        ],
+                        "smoothLine": True,
+                        "showDots": True,
+                        "name": f"{centralina}",
+                        "id": f"{centralina}",
+                    }
+                )
         else:
             for luogo in pro["luoghi"]:
 
@@ -855,26 +1136,32 @@ def get_picture_analyze_data(centraline=None, freq="", pro: dict = {}):
                 if pro["zoom"] == 0:
                     name = f"{luogo['nazione']}"
 
-                conf["sources"].append({
-                    "type": "place",
-                    "source": {
-                        "path": luogo,
-                        "geolevel": pro["zoom"],
-                    },
-                    "parameter": inquinante,
-                    "chartType": "line",
-                    "yAxis": "y",
-                    "selectedColor": colori_centraline[pro["luoghi"].index(luogo)],
-                    "smoothLine": True,
-                    "showDots": True,
-                    "name": name,
-                    "id": name,
-                    "dataSource": "all"
-                })
+                conf["sources"].append(
+                    {
+                        "type": "place",
+                        "source": {
+                            "path": luogo,
+                            "geolevel": pro["zoom"],
+                        },
+                        "parameter": inquinante,
+                        "chartType": "line",
+                        "yAxis": "y",
+                        "selectedColor": colori_centraline[pro["luoghi"].index(luogo)],
+                        "smoothLine": True,
+                        "showDots": True,
+                        "name": name,
+                        "id": name,
+                        "dataSource": "all",
+                    }
+                )
 
         wpg = widget_picture_generator("WDBNX4IUF66C")
         wpg.get_widget_picture_file(
-            f"{ABSOLUTE_PATH_IMG}/{inquinante}_chart.png", "tool_analizza_dati", conf, timeout=15)
+            f"{ABSOLUTE_PATH_IMG}/{inquinante}_chart.png",
+            "tool_analizza_dati",
+            conf,
+            timeout=15,
+        )
         # Destroy the driver
         wpg.destroy()
 
@@ -912,7 +1199,8 @@ def genera_immagini_square(pro: dict, freq: str) -> dict:
             for centralina in centraline:
                 if centralina.startswith("MM") and all_mm == False:
                     get_picture_analyze_path(
-                        centraline=[centralina], freq=freq, pro=pro)
+                        centraline=[centralina], freq=freq, pro=pro
+                    )
                 else:
                     get_picture_geomap_centralina(centralina)
     else:
@@ -943,8 +1231,7 @@ def genera_Pagine(stile="Helvetica", x=30, y=770, cont=0, proj={}, freq=""):
     leg = genera_immagini_square(proj, freq)
 
     if proj["pro"]:
-        posizioni = aggiungi_Commenti(
-            pdf, stile, x, y, width, height, proj, freq)
+        posizioni = aggiungi_Commenti(pdf, stile, x, y, width, height, proj, freq)
 
     y += 20
 
@@ -974,15 +1261,18 @@ def genera_Pagine(stile="Helvetica", x=30, y=770, cont=0, proj={}, freq=""):
 
                 if "indirizzo" not in info.keys() and "address" not in info.keys():
                     righe_dispositivi.append(
-                        f"- {info['ID']} - {info['geodecode']['comune']}")
+                        f"- {info['ID']} - {info['geodecode']['comune']}"
+                    )
 
                 else:
                     if "indirizzo" in info:
                         righe_dispositivi.append(
-                            f"- {info['ID']} {info['indirizzo']} - {info['geodecode']['comune']}")
+                            f"- {info['ID']} {info['indirizzo']} - {info['geodecode']['comune']}"
+                        )
                     else:
                         righe_dispositivi.append(
-                            f"- {info['ID']} {info['address']} - {info['geodecode']['comune']}")
+                            f"- {info['ID']} {info['address']} - {info['geodecode']['comune']}"
+                        )
 
                 if luogo["centralina"] == "Capannone 2":
                     righe_dispositivi.append("\t OZONEANDRIA006")
@@ -997,21 +1287,25 @@ def genera_Pagine(stile="Helvetica", x=30, y=770, cont=0, proj={}, freq=""):
             else:
                 righe_dispositivi.append(
                     # dato il percorso define il luogo e lo zoom in cui rientra e il colore della legenda
-                    f"- {info['ID']} - Centralina Mobile - {get_name_color(leg[info['ID']])}")
+                    f"- {info['ID']} - Centralina Mobile - {get_name_color(leg[info['ID']])}"
+                )
                 print(
-                    f"- {info['ID']} - Centralina Mobile - {get_name_color(leg[info['ID']])} - {leg[info['ID']]}")
+                    f"- {info['ID']} - Centralina Mobile - {get_name_color(leg[info['ID']])} - {leg[info['ID']]}"
+                )
         if proj["zoom"] == 4:
             righe_dispositivi.append(
-                f"- {luogo['nazione']}, {luogo['regione']}, {luogo['squareID']}")
+                f"- {luogo['nazione']}, {luogo['regione']}, {luogo['squareID']}"
+            )
         if proj["zoom"] == 3:
             righe_dispositivi.append(
-                f"- {luogo['nazione']}, {luogo['regione']}, {luogo['provincia']}, {luogo['comune']}")
+                f"- {luogo['nazione']}, {luogo['regione']}, {luogo['provincia']}, {luogo['comune']}"
+            )
         if proj["zoom"] == 2:
             righe_dispositivi.append(
-                f"- {luogo['nazione']}, {luogo['regione']}, {luogo['provincia']}")
+                f"- {luogo['nazione']}, {luogo['regione']}, {luogo['provincia']}"
+            )
         if proj["zoom"] == 1:
-            righe_dispositivi.append(
-                f"- {luogo['nazione']}, {luogo['regione']}")
+            righe_dispositivi.append(f"- {luogo['nazione']}, {luogo['regione']}")
         if proj["zoom"] == 0:
             righe_dispositivi.append(f"- {luogo['nazione']}")
 
@@ -1037,8 +1331,7 @@ def genera_Pagine(stile="Helvetica", x=30, y=770, cont=0, proj={}, freq=""):
 
     ultima_foto_aggiunta = 0
 
-    add_title_foto(pdf, x, y,
-                   width, height, stile, type="mappa")
+    add_title_foto(pdf, x, y, width, height, stile, type="mappa")
 
     c = 0
     for imm in immagini:
@@ -1048,7 +1341,16 @@ def genera_Pagine(stile="Helvetica", x=30, y=770, cont=0, proj={}, freq=""):
             else:
                 ultima_foto_aggiunta = ultima_foto_aggiunta + 30
             ultima_foto_aggiunta = aggiungi_foto(
-                pdf, stile, x, ultima_foto_aggiunta, width, height, f"{ABSOLUTE_PATH_IMG}/{imm}", 0, type="mappa")
+                pdf,
+                stile,
+                x,
+                ultima_foto_aggiunta,
+                width,
+                height,
+                f"{ABSOLUTE_PATH_IMG}/{imm}",
+                0,
+                type="mappa",
+            )
             os.remove(f"{ABSOLUTE_PATH_IMG}/{imm}")
             c += 1
 
@@ -1057,15 +1359,23 @@ def genera_Pagine(stile="Helvetica", x=30, y=770, cont=0, proj={}, freq=""):
     for poll in ordine_inquinanti:
         for imm in immagini:
             if len(imm.split("_")) > 2:
-                inqu = imm.split(
-                    "_")[0] + "_" + imm.split("_")[1]
+                inqu = imm.split("_")[0] + "_" + imm.split("_")[1]
             else:
                 inqu = imm.split("_")[0]
 
             if poll == inqu:
                 ultima_foto_aggiunta = aggiungi_foto(
-                    pdf, stile, x, ultima_foto_aggiunta-20, width, height, f"{ABSOLUTE_PATH_IMG}/{imm}", count, inq=nomi_inquinanti[inqu])
-                count = count+1
+                    pdf,
+                    stile,
+                    x,
+                    ultima_foto_aggiunta - 20,
+                    width,
+                    height,
+                    f"{ABSOLUTE_PATH_IMG}/{imm}",
+                    count,
+                    inq=nomi_inquinanti[inqu],
+                )
+                count = count + 1
 
                 os.remove(f"{ABSOLUTE_PATH_IMG}/{imm}")
 
@@ -1074,7 +1384,17 @@ def genera_Pagine(stile="Helvetica", x=30, y=770, cont=0, proj={}, freq=""):
     return npdf2
 
 
-def genera_analisi_sforamenti(stile="Helvetica", x=30, y=770, cont=0, proj={}, freq="", title="", datainizio=None, datafine=None):
+def genera_analisi_sforamenti(
+    stile="Helvetica",
+    x=30,
+    y=770,
+    cont=0,
+    proj={},
+    freq="",
+    title="",
+    datainizio=None,
+    datafine=None,
+):
 
     if datainizio == None or datafine == None:
         datainizio, datafine = get_start_end_date(freq, proj)
@@ -1082,15 +1402,19 @@ def genera_analisi_sforamenti(stile="Helvetica", x=30, y=770, cont=0, proj={}, f
     print("Analisi Sforamenti da ", datainizio, " a ", datafine)
 
     document = SimpleDocTemplate(
-        f"{ABSOLUTE_PATH_REPORT}/{title}_Analisi.pdf", pagesize=A4)
+        f"{ABSOLUTE_PATH_REPORT}/{title}_Analisi.pdf", pagesize=A4
+    )
     elements = []
 
     elements.append(Paragraph(f"Analisi Sforamenti", heading_style))
 
     for elem in proj["luoghi"]:
         if "centralina" in elem:
-            elements.append(analisi_sforamenti(
-                elem, datainizio, datafine, "hourly", 5, '["ssq"]', True))
+            elements.append(
+                analisi_sforamenti(
+                    elem, datainizio, datafine, "hourly", 5, '["ssq"]', True
+                )
+            )
 
     elements.append(Paragraph("\n", heading_style))
     elements.append(create_air_quality_table())
@@ -1104,11 +1428,13 @@ def genera_analisi_sforamenti(stile="Helvetica", x=30, y=770, cont=0, proj={}, f
     output_pdf_path = f"{ABSOLUTE_PATH_REPORT}/{title}_Analisi.pdf"
 
     # Unisci il PDF di sfondo con il PDF generato
-    merge_pdfs_background(background_pdf_path,
-                          content_pdf_path, output_pdf_path)
+    merge_pdfs_background(background_pdf_path, content_pdf_path, output_pdf_path)
+
 
 # creare una funzione che attraverso la funzione download_dati scarica i dati e se la frequenza è annuale analizza mese per mese i dati scaricati e conta quante volte i vari inquinanti superano il limite
-def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, dati=False):
+def conteggio_sforamenti(
+    places: dict, datainizio, datafine, type, zoo, freq, dati=False
+):
 
     for place in places:
 
@@ -1134,7 +1460,8 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
 
         # convertire la colonna timestamp in formato datetime partendo da questa stringa: 2024-01-02T19:00:00+0100
         df["timestamp"] = pd.to_datetime(
-            df["timestamp"], format="%Y-%m-%dT%H:%M:%S%z", utc=True)
+            df["timestamp"], format="%Y-%m-%dT%H:%M:%S%z", utc=True
+        )
 
         print(df.dtypes)
 
@@ -1145,34 +1472,40 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
             print(f"Lunghezza dataframe mese {mese}: ", len(df_mese))
 
             for inquinante in df_mese.columns:
-                nome_inq = inquinante.split(' ')[0]
+                nome_inq = inquinante.split(" ")[0]
 
-                if nome_inq in nomi_inquinanti and nome_inq in limiti_inquinanti and nome_inq not in ["temperatura", "umidita"]:
-                    count = len(df_mese[df_mese[inquinante] >
-                                limiti_inquinanti[nome_inq]])
+                if (
+                    nome_inq in nomi_inquinanti
+                    and nome_inq in limiti_inquinanti
+                    and nome_inq not in ["temperatura", "umidita"]
+                ):
+                    count = len(
+                        df_mese[df_mese[inquinante] > limiti_inquinanti[nome_inq]]
+                    )
                     print(
-                        f"Numero di sforamenti di {nomi_inquinanti[nome_inq]} nel mese {mese}: {count}")
+                        f"Numero di sforamenti di {nomi_inquinanti[nome_inq]} nel mese {mese}: {count}"
+                    )
                     df_sforamenti.at[mese, nomi_inquinanti[nome_inq]] = count
 
         # Crea un foglio di stile per il testo all'interno delle celle
         styles = getSampleStyleSheet()
 
         # aggiungi agli style lo style Caption
-        styles.add(ParagraphStyle(name='Caption', parent=styles['Normal']))
-        styles.add(ParagraphStyle(name='Table Column', parent=styles['Normal']))
-        styles.add(ParagraphStyle(name='Table Row', parent=styles['Normal']))
+        styles.add(ParagraphStyle(name="Caption", parent=styles["Normal"]))
+        styles.add(ParagraphStyle(name="Table Column", parent=styles["Normal"]))
+        styles.add(ParagraphStyle(name="Table Row", parent=styles["Normal"]))
 
         # Funzione per applicare Paragraph a tutto il testo della tabella
-        def create_paragraph(text, style_name='Normal'):
+        def create_paragraph(text, style_name="Normal"):
             # Imposta il colore del testo per lo stile Heading3
-            if style_name == 'Heading3':
-                styles['Heading3'].textColor = colors.whitesmoke
-                styles['Heading3'].fontName = 'Helvetica-Bold'
-                styles['Heading3'].fontSize = 8
+            if style_name == "Heading3":
+                styles["Heading3"].textColor = colors.whitesmoke
+                styles["Heading3"].fontName = "Helvetica-Bold"
+                styles["Heading3"].fontSize = 8
                 styles[style_name].leading = 8
             elif style_name == "Caption":
                 styles[style_name].textColor = colors.black
-                styles[style_name].fontName = 'Helvetica'
+                styles[style_name].fontName = "Helvetica"
                 styles[style_name].fontSize = 6
                 styles[style_name].leading = 6
                 # centra il testo
@@ -1180,17 +1513,17 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
                 styles[style_name].spaceBefore = 4
             elif style_name == "Table Column":
                 styles[style_name].textColor = colors.whitesmoke
-                styles[style_name].fontName = 'Helvetica-Bold'
+                styles[style_name].fontName = "Helvetica-Bold"
                 styles[style_name].fontSize = 10
                 styles[style_name].leading = 10
             elif style_name == "Table Row":
                 styles[style_name].textColor = colors.black
-                styles[style_name].fontName = 'Helvetica'
+                styles[style_name].fontName = "Helvetica"
                 styles[style_name].fontSize = 8
                 styles[style_name].leading = 8
             else:
                 styles[style_name].textColor = colors.black
-                styles[style_name].fontName = 'Helvetica'
+                styles[style_name].fontName = "Helvetica"
                 styles[style_name].fontSize = 6
                 # riduci interlinea
                 styles[style_name].leading = 6
@@ -1204,23 +1537,37 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
         data = []
 
         # inserire la prima riga in base alle colonne del dataframe df_sforamenti e aggiungendo i vari mesi
-        header_table = [create_paragraph("Mese", 'Table Column')]
+        header_table = [create_paragraph("Mese", "Table Column")]
         for inquinante in df_sforamenti.columns:
-            header_table.append(create_paragraph(
-                f"{inquinante} [-]", 'Table Column'))
+            header_table.append(create_paragraph(f"{inquinante} [-]", "Table Column"))
 
         data.append(header_table)
-        mesi_nomi = {1: "Gennaio", 2: "Febbraio", 3: "Marzo", 4: "Aprile", 5: "Maggio", 6: "Giugno",
-                    7: "Luglio", 8: "Agosto", 9: "Settembre", 10: "Ottobre", 11: "Novembre", 12: "Dicembre"}
+        mesi_nomi = {
+            1: "Gennaio",
+            2: "Febbraio",
+            3: "Marzo",
+            4: "Aprile",
+            5: "Maggio",
+            6: "Giugno",
+            7: "Luglio",
+            8: "Agosto",
+            9: "Settembre",
+            10: "Ottobre",
+            11: "Novembre",
+            12: "Dicembre",
+        }
         for mese in range(1, 13):
-            riga = [create_paragraph(str(mesi_nomi[mese]), 'Table Row')]
+            riga = [create_paragraph(str(mesi_nomi[mese]), "Table Row")]
             for inquinante in df_sforamenti.columns:
-                riga.append(create_paragraph(
-                    str(df_sforamenti.at[mese, inquinante]), 'Table Row'))
+                riga.append(
+                    create_paragraph(
+                        str(df_sforamenti.at[mese, inquinante]), "Table Row"
+                    )
+                )
 
             data.append(riga)
 
-        #in base al numero di righe creare un array per la dimensione dell'altezza della riga dove la prima riga è l'header che deve essere 30 e le altre 20
+        # in base al numero di righe creare un array per la dimensione dell'altezza della riga dove la prima riga è l'header che deve essere 30 e le altre 20
         altezze = [30]
         for i in range(1, len(data)):
             altezze.append(20)
@@ -1229,20 +1576,25 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
         table = Table(data, rowHeights=altezze)
 
         # Applica lo stile alla tabella
-        table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#009688")),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-        ]))
+        table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#009688")),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                    ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+                ]
+            )
+        )
 
         # Aggiungi la tabella al documento
 
         print("Analisi Sforamenti da ", datainizio, " a ", datafine)
 
         document = SimpleDocTemplate(
-            f"{ABSOLUTE_PATH_REPORT}/Tabella_Analisi_{id}.pdf", pagesize=A4)
+            f"{ABSOLUTE_PATH_REPORT}/Tabella_Analisi_{id}.pdf", pagesize=A4
+        )
         elements = []
 
         elements.append(Paragraph(f"Analisi dei dati di {id}", heading_style))
@@ -1252,26 +1604,33 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
         elements.append(table)
 
         # aggiungere una caption sotto alla tabella
-        elements.append(create_paragraph(
-            "Tabella degli sforamenti: numero di superamenti delle soglie orarie per ciascun parametro monitorato, calcolati sulle medie orarie.", 'Caption'))
+        elements.append(
+            create_paragraph(
+                "Tabella degli sforamenti: numero di superamenti delle soglie orarie per ciascun parametro monitorato, calcolati sulle medie orarie.",
+                "Caption",
+            )
+        )
 
         if freq == "annuali":
             # creare una tabella con le medie stagionali degli inquinanti
             elements.append(
-                Paragraph(f"Medie stagionali degli inquinanti", heading_style))
+                Paragraph(f"Medie stagionali degli inquinanti", heading_style)
+            )
 
             # creare le medie stagionali inverno, primavera, estate, autunno evitando l'ID
             df_season = df.copy()
 
             df_season["timestamp"] = pd.to_datetime(
-                df_season["timestamp"], format="%Y-%m-%dT%H:%M:%S%z", utc=True)
+                df_season["timestamp"], format="%Y-%m-%dT%H:%M:%S%z", utc=True
+            )
 
             df_season = df_season.drop("ID", axis=1)
 
             print(df_season.columns)
 
             df_season = df_season.groupby(
-                df["timestamp"].dt.quarter).mean()  # escludi l'ID
+                df["timestamp"].dt.quarter
+            ).mean()  # escludi l'ID
 
             # Crea una lista di righe per la tabella
             # Dati della tabella con Paragraph applicato
@@ -1279,16 +1638,20 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
 
             df_season = df_season.drop("timestamp", axis=1)
 
-            #se tutte le righe sono 0 cancellare le colonne 
+            # se tutte le righe sono 0 cancellare le colonne
             for inquinante in df_season.columns:
                 if df_season[inquinante].sum() == 0:
                     df_season = df_season.drop(inquinante, axis=1)
 
             # inserire la prima riga in base alle colonne del dataframe df_sforamenti e aggiungendo i vari mesi
-            header_table = [create_paragraph("Stagione", 'Table Column')]
+            header_table = [create_paragraph("Stagione", "Table Column")]
             for inquinante in df_season.columns:
-                header_table.append(create_paragraph(
-                    f"{nomi_inquinanti[inquinante.split(' ')[0]]}\n {inquinante.split(' ')[1]}", 'Table Column'))
+                header_table.append(
+                    create_paragraph(
+                        f"{nomi_inquinanti[inquinante.split(' ')[0]]}\n {inquinante.split(' ')[1]}",
+                        "Table Column",
+                    )
+                )
 
             data.append(header_table)
 
@@ -1299,10 +1662,13 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
 
             for stagione in range(1, 5):
 
-                riga = [create_paragraph(stagioni[stagione], 'Table Row')]
+                riga = [create_paragraph(stagioni[stagione], "Table Row")]
                 for inquinante in df_season.columns:
-                    riga.append(create_paragraph(
-                        str(df_season.at[stagione, inquinante]), 'Table Row'))
+                    riga.append(
+                        create_paragraph(
+                            str(df_season.at[stagione, inquinante]), "Table Row"
+                        )
+                    )
 
                 data.append(riga)
 
@@ -1313,53 +1679,65 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
             table_season = Table(data, rowHeights=altezze)
 
             # Applica lo stile alla tabella e metterne uno spazio sotto la tabella per la caption
-            table_season.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#009688")),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-            ]))
+            table_season.setStyle(
+                TableStyle(
+                    [
+                        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#009688")),
+                        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                        ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+                    ]
+                )
+            )
 
             elements.append(Paragraph("\n", heading_style))
             elements.append(table_season)
-            elements.append(create_paragraph(
-                "Tabella delle medie stagionali degli inquinanti: medie stagionali degli inquinanti monitorati, calcolati sulle medie orarie.", 'Caption'))
-
-
-            #creare una tabella con le medie semestrali 
             elements.append(
-                Paragraph(f"Medie semestrali degli inquinanti", heading_style))
-            
+                create_paragraph(
+                    "Tabella delle medie stagionali degli inquinanti: medie stagionali degli inquinanti monitorati, calcolati sulle medie orarie.",
+                    "Caption",
+                )
+            )
+
+            # creare una tabella con le medie semestrali
+            elements.append(
+                Paragraph(f"Medie semestrali degli inquinanti", heading_style)
+            )
+
             df_semester = df.copy()
 
             df_semester["timestamp"] = pd.to_datetime(
-                df_semester["timestamp"], format="%Y-%m-%dT%H:%M:%S%z", utc=True)
-            
+                df_semester["timestamp"], format="%Y-%m-%dT%H:%M:%S%z", utc=True
+            )
+
             df_semester = df_semester.drop("ID", axis=1)
-            
+
             # fai le medie dei primi due trimestri e degli ultimi due trimestri
-            df_semester = df_semester.groupby(
-                df["timestamp"].dt.quarter // 2).mean()
-            
+            df_semester = df_semester.groupby(df["timestamp"].dt.quarter // 2).mean()
+
             # Crea una lista di righe per la tabella
             # Dati della tabella con Paragraph applicato
             data = []
 
             df_semester = df_semester.drop("timestamp", axis=1)
 
-            #se tutte le righe sono 0 cancellare le colonne
+            # se tutte le righe sono 0 cancellare le colonne
             for inquinante in df_semester.columns:
                 if df_semester[inquinante].sum() == 0:
                     df_semester = df_semester.drop(inquinante, axis=1)
 
             # inserire la prima riga in base alle colonne del dataframe df_sforamenti e aggiungendo i vari mesi
-            header_table = [create_paragraph("Semestre", 'Table Column')]
+            header_table = [create_paragraph("Semestre", "Table Column")]
 
             for inquinante in df_semester.columns:
-                header_table.append(create_paragraph(
-                    f"{nomi_inquinanti[inquinante.split(' ')[0]]}\n {inquinante.split(' ')[1]}", 'Table Column'))
-                
+                header_table.append(
+                    create_paragraph(
+                        f"{nomi_inquinanti[inquinante.split(' ')[0]]}\n {inquinante.split(' ')[1]}",
+                        "Table Column",
+                    )
+                )
+
             data.append(header_table)
 
             semestri = {0: "Primo Semestre", 1: "Secondo Semestre"}
@@ -1369,11 +1747,14 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
             df_semester = df_semester.astype(float).round(2)
 
             for semestre in range(0, 2):
-                
-                riga = [create_paragraph(semestri[semestre], 'Table Row')]
+
+                riga = [create_paragraph(semestri[semestre], "Table Row")]
                 for inquinante in df_semester.columns:
-                    riga.append(create_paragraph(
-                        str(df_semester.at[semestre, inquinante]), 'Table Row'))
+                    riga.append(
+                        create_paragraph(
+                            str(df_semester.at[semestre, inquinante]), "Table Row"
+                        )
+                    )
 
                 data.append(riga)
 
@@ -1386,20 +1767,28 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
 
             # Applica lo stile alla tabella e metterne uno spazio sotto la tabella per la caption
 
-            table_semester.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#009688")),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-            ]))
+            table_semester.setStyle(
+                TableStyle(
+                    [
+                        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#009688")),
+                        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                        ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+                    ]
+                )
+            )
 
             elements.append(Paragraph("\n", heading_style))
 
             elements.append(table_semester)
 
-            elements.append(create_paragraph( "Tabella delle medie semestrali degli inquinanti: medie semestrali degli inquinanti monitorati, calcolati sulle medie orarie.", 'Caption'))
-        
+            elements.append(
+                create_paragraph(
+                    "Tabella delle medie semestrali degli inquinanti: medie semestrali degli inquinanti monitorati, calcolati sulle medie orarie.",
+                    "Caption",
+                )
+            )
 
         # Crea il PDF
         document.build(elements)
@@ -1410,18 +1799,40 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
         output_pdf_path = f"{ABSOLUTE_PATH_REPORT}/Tabella_Analisi_{id}.pdf"
 
         # Unisci il PDF di sfondo con il PDF generato
-        merge_pdfs_background(background_pdf_path,
-                            content_pdf_path, output_pdf_path)
+        merge_pdfs_background(background_pdf_path, content_pdf_path, output_pdf_path)
 
 
 def generate_comments(places: dict, zoo, freq):
     openai.api_key = os.getenv("OPENAI_API_KEY")
-    zoo_luogo = {"0": "la Nazione", "1": "la Regione", "2": "la Provincia",
-                 "3": "il Comune", "4": "lo squareID", "5": "la Centralina"}
-    limiti = {"PM10": 50, "PM2.5": 25, "NO2": 200,
-              "O3": 120, "SO2": 350, "CO": 10, "AQI": 100}
-    unita_misura = {"PM10": "µg/m³", "PM2.5": "µg/m³", "NO2": "µg/m³", "O3": "µg/m³",
-                    "SO2": "µg/m³", "CO": "mg/m³", "AQI": "%", "PM1": "µg/m³", "Temperatura": "°C", "Umidità": "%"}
+    zoo_luogo = {
+        "0": "la Nazione",
+        "1": "la Regione",
+        "2": "la Provincia",
+        "3": "il Comune",
+        "4": "lo squareID",
+        "5": "la Centralina",
+    }
+    limiti = {
+        "PM10": 50,
+        "PM2.5": 25,
+        "NO2": 200,
+        "O3": 120,
+        "SO2": 350,
+        "CO": 10,
+        "AQI": 100,
+    }
+    unita_misura = {
+        "PM10": "µg/m³",
+        "PM2.5": "µg/m³",
+        "NO2": "µg/m³",
+        "O3": "µg/m³",
+        "SO2": "µg/m³",
+        "CO": "mg/m³",
+        "AQI": "%",
+        "PM1": "µg/m³",
+        "Temperatura": "°C",
+        "Umidità": "%",
+    }
 
     if freq == "giornalieri":
         type = "hourly"
@@ -1432,7 +1843,9 @@ def generate_comments(places: dict, zoo, freq):
     info = ""
     if zoo == "5":
         info = info_centralina(places[0]["centralina"])
-        prompt += f"\n\nLa centralina si trova nella città di {info['geodecode']['comune']} "
+        prompt += (
+            f"\n\nLa centralina si trova nella città di {info['geodecode']['comune']} "
+        )
 
         if "indirizzo" in info:
             prompt += f"in via {info['indirizzo']}."
@@ -1468,8 +1881,14 @@ def generate_comments(places: dict, zoo, freq):
 
     prompt += "I valori degli anni scorsi sono stati:\n"
 
-    dati = download_dati(places[0], datainizio - timedelta(days=365),
-                         datafine - timedelta(days=365), type, zoo, "[]")
+    dati = download_dati(
+        places[0],
+        datainizio - timedelta(days=365),
+        datafine - timedelta(days=365),
+        type,
+        zoo,
+        "[]",
+    )
 
     # Converte lo stream di byte in un oggetto leggibile da Pandas
     csv_data = BytesIO(dati)
@@ -1483,8 +1902,10 @@ def generate_comments(places: dict, zoo, freq):
     print(prompt)
     chat_completion = openai.ChatCompletion.create(
         # Imposta il numero massimo di token per la risposta
-        model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}],
-        temperature=0.5)
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.5,
+    )
 
     return chat_completion["choices"][0]["message"]["content"]
 
@@ -1511,7 +1932,7 @@ def aggiungi_Commenti(pdf, stile, x, y, width, height, data, f):
     riga_corrente = " "
     for parola in testo_formattato.split():
         parola_corrente = riga_corrente + parola + " "
-        if pdf.stringWidth(parola_corrente, stile, 12.5) <= width - x-10:
+        if pdf.stringWidth(parola_corrente, stile, 12.5) <= width - x - 10:
             riga_corrente = parola_corrente
         else:
             righe.append(riga_corrente)
@@ -1535,7 +1956,9 @@ def aggiungi_Commenti(pdf, stile, x, y, width, height, data, f):
     return x, y
 
 
-def add_title_foto(pdf, x, y, width, height, stile, title=None, subtitle=None, type=None, inq=""):
+def add_title_foto(
+    pdf, x, y, width, height, stile, title=None, subtitle=None, type=None, inq=""
+):
     default_title = ""
 
     # Predefined title
@@ -1545,7 +1968,9 @@ def add_title_foto(pdf, x, y, width, height, stile, title=None, subtitle=None, t
         default_title = f"{translation(LINGUA, 'graph_view')} {inq}"
 
     if subtitle is None:
-        subtitle = " "  # Leave as an empty string or change to a default subtitle if neede
+        subtitle = (
+            " "  # Leave as an empty string or change to a default subtitle if neede
+        )
     # Combine the default title with the specific title (if available)
     full_title = f"{default_title}:"
 
@@ -1603,19 +2028,19 @@ def aggiungi_foto(pdf, stile, x, y, width, height, foto_path, cont, type=None, i
         FrameFooter(pdf, stile)
         y = 750  # Reset della posizione verticale
         foto_y = y - 300
-        pdf.drawImage(foto_path, foto_x, foto_y,
-                      width=foto_width, height=foto_height)
+        pdf.drawImage(foto_path, foto_x, foto_y, width=foto_width, height=foto_height)
     elif foto_y == 30:
-        pdf.drawImage(foto_path, foto_x, foto_y - 35,
-                      width=foto_width, height=foto_height - 30)
+        pdf.drawImage(
+            foto_path, foto_x, foto_y - 35, width=foto_width, height=foto_height - 30
+        )
     else:
-        pdf.drawImage(foto_path, foto_x, foto_y,
-                      width=foto_width, height=foto_height)
+        pdf.drawImage(foto_path, foto_x, foto_y, width=foto_width, height=foto_height)
 
     # Aggiungi il tipo di foto
     if type != "mappa":
-        add_title_foto(pdf, foto_x+5, foto_y + foto_height +
-                       12, width, height, stile, inq=inq)
+        add_title_foto(
+            pdf, foto_x + 5, foto_y + foto_height + 12, width, height, stile, inq=inq
+        )
 
     # Controllo se l'immagine ridotta sfora il limite inferiore della pagina
     y = foto_y - 16
@@ -1644,14 +2069,16 @@ def merge_pdfs(npdf1, npdf2):
             os.remove(os.path.join(ABSOLUTE_PATH_IMG, item))
 
 
-def genera_Pagina_Iniziale(font_globale="Helvetica", stile_globale="", fontn=40, proj={}, freq=""):
+def genera_Pagina_Iniziale(
+    font_globale="Helvetica", stile_globale="", fontn=40, proj={}, freq=""
+):
 
     npdf1 = f"{ABSOLUTE_PATH_REPORT}/Pagina_Report_{freq}.pdf"
     pdf = canvas.Canvas(npdf1)
     pdf.drawImage(lista_template[0], 0, 0, width=A4[0], height=A4[1])
 
-    FrameHeaderAndBody(pdf, font_globale+stile_globale, fontn, proj, freq)
-    FrameFooter(pdf, font_globale+stile_globale)
+    FrameHeaderAndBody(pdf, font_globale + stile_globale, fontn, proj, freq)
+    FrameFooter(pdf, font_globale + stile_globale)
     pdf.save()
     return npdf1
 
@@ -1660,8 +2087,14 @@ def check_old_report(id: str, f: str, datastart: datetime, datafinish: datetime)
 
     url = f"{server}:5002/elenco_report"
 
-    payload = {"apikey": "WDBNX4IUF66C", "id_progetto": id, "frequenze": f"[\"{f}\"]", "inizio": datastart.strftime(
-        "%Y-%m-%d"), "fine": datafinish.strftime("%Y-%m-%d"), "rapido": "False"}
+    payload = {
+        "apikey": "WDBNX4IUF66C",
+        "id_progetto": id,
+        "frequenze": f'["{f}"]',
+        "inizio": datastart.strftime("%Y-%m-%d"),
+        "fine": datafinish.strftime("%Y-%m-%d"),
+        "rapido": "False",
+    }
 
     req = requests.post(url, payload)
 
@@ -1672,8 +2105,9 @@ def check_old_report(id: str, f: str, datastart: datetime, datafinish: datetime)
         if f == "giornalieri" or f == "custom":
             presente = False
             for dat in range((datafinish - datastart).days):
-                data = (datastart + timedelta(days=dat)
-                        ).replace(day=(datastart + timedelta(days=dat)).day)
+                data = (datastart + timedelta(days=dat)).replace(
+                    day=(datastart + timedelta(days=dat)).day
+                )
 
                 # convertire data in una stringa che ha il seguente formato: Tue, 27 Feb 2024
                 data = data.strftime("%a, %d %b %Y")
@@ -1698,7 +2132,7 @@ def check_old_report(id: str, f: str, datastart: datetime, datafinish: datetime)
 
 TOKEN_WRITE = "1FPCPQCZPV7G"
 progetti = retrieve_project("WDBNX4IUF66C")
-#progetti = [json.loads(open(f"{ABSOLUTE_PATH}/esempio_progetto.json").read())]
+# progetti = [json.loads(open(f"{ABSOLUTE_PATH}/esempio_progetto.json").read())]
 
 for prog in progetti:
     if prog["attivo"] is True:
@@ -1717,11 +2151,19 @@ for prog in progetti:
                 continue
             if f == "mensili" and datetime.now().day != 1:
                 continue
-            if f == "annuali" and datetime.now().day != 17 and datetime.now().month != 1:
+            if (
+                f == "annuali"
+                and datetime.now().day != 17
+                and datetime.now().month != 1
+            ):
                 continue
             print(f)
             report_mancanti = check_old_report(
-                prog["id_progetto"], f, datetime.now() - timedelta(days=20), datetime.now())
+                prog["id_progetto"],
+                f,
+                datetime.now() - timedelta(days=20),
+                datetime.now(),
+            )
 
             print(report_mancanti)
 
@@ -1733,7 +2175,9 @@ for prog in progetti:
                     nome_report = f"{prog['alias_progetto']}_{translation_data(LINGUA, datastart)}"
 
                     if f == "annuali":
-                        nome_report = f"{prog['alias_progetto']}_{datastart.strftime('%Y')}"
+                        nome_report = (
+                            f"{prog['alias_progetto']}_{datastart.strftime('%Y')}"
+                        )
 
                     # fare il confronto per vedere se è settimanale e in tal caso farlo solo se è di lunedi
                     if f == "settimanali":
@@ -1741,8 +2185,7 @@ for prog in progetti:
 
                     if f == "mensili":
                         # creare il nome del report di questo tipo: alias_progetto_nomemese_anno
-                        nome_mese = translation(
-                            LINGUA, datastart.strftime('%B'))
+                        nome_mese = translation(LINGUA, datastart.strftime("%B"))
                         nome_report = f"{prog['alias_progetto']}_{nome_mese}_{datastart.strftime('%Y')}"
 
                     if f == "custom":
@@ -1750,9 +2193,14 @@ for prog in progetti:
 
                     pdf1 = genera_Pagina_Iniziale(proj=prog, freq=f)
 
-
-                    conteggio_sforamenti(places=prog["luoghi"], datainizio=datastart,
-                                         datafine=datafinish, type="hourly", zoo=prog["zoom"], freq=f)
+                    conteggio_sforamenti(
+                        places=prog["luoghi"],
+                        datainizio=datastart,
+                        datafine=datafinish,
+                        type="hourly",
+                        zoo=prog["zoom"],
+                        freq=f,
+                    )
 
                     c = 0
                     # se lo zoom è  5 (centralina) ciclare sugli id della centralina e fare il merge dei pdf
@@ -1764,27 +2212,39 @@ for prog in progetti:
                                 merge_pdfs(pdf1, pdf_sforamenti)
                             else:
                                 merge_pdfs(
-                                    f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf", pdf_sforamenti)
+                                    f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf",
+                                    pdf_sforamenti,
+                                )
                             c += 1
                     else:
-                        pdf_sforamenti = f"{ABSOLUTE_PATH_REPORT}/Tabella_Analisi.pdf"
+                        pdf_sforamenti = f"{ABSOLUTE_PATH_REPORT}/Tabella_Analisi_{prog['alias_progetto']}.pdf"
                         merge_pdfs(pdf1, pdf_sforamenti)
 
-
                     pdf2 = genera_Pagine(proj=prog, freq=f)
-                    merge_pdfs(
-                        f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf", pdf2)
+                    merge_pdfs(f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf", pdf2)
 
                     delete = False
 
                     alias = prog["alias_progetto"]
 
                     if "CANNONE" in prog["alias_progetto"]:
-                        alias = prog["alias_progetto"].replace(
-                            "CANNONE SRL ", "")
+                        alias = prog["alias_progetto"].replace("CANNONE SRL ", "")
 
-                    payload = {"alias_progetto": alias, "metadata": json.dumps({"id_progetto": prog["id_progetto"], "frequenza": f, "nome_report": nome_report, "periodo": {
-                        "start_date": datastart.strftime("%Y-%m-%d %H:%M"), "end_date": datafinish.strftime("%Y-%m-%d %H:%M")}}), "token": TOKEN_WRITE}
+                    payload = {
+                        "alias_progetto": alias,
+                        "metadata": json.dumps(
+                            {
+                                "id_progetto": prog["id_progetto"],
+                                "frequenza": f,
+                                "nome_report": nome_report,
+                                "periodo": {
+                                    "start_date": datastart.strftime("%Y-%m-%d %H:%M"),
+                                    "end_date": datafinish.strftime("%Y-%m-%d %H:%M"),
+                                },
+                            }
+                        ),
+                        "token": TOKEN_WRITE,
+                    }
 
                     print(nome_report)
 
@@ -1792,18 +2252,24 @@ for prog in progetti:
 
                     if prog["pro"] == True:
                         genera_analisi_sforamenti(
-                            proj=prog, freq=f, title=nome_report, datainizio=datastart, datafine=datafinish)
+                            proj=prog,
+                            freq=f,
+                            title=nome_report,
+                            datainizio=datastart,
+                            datafine=datafinish,
+                        )
 
                         # dividere il pdf in due parti, la prima solo con le prime due pagine e la seconda con il resto
-                        pdf = PdfReader(
-                            f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf")
+                        pdf = PdfReader(f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf")
                         pdf_writer = PdfWriter()
 
                         for page_num in range(2):
                             page = pdf.pages[page_num]
                             pdf_writer.add_page(page)
 
-                        with open(f"{ABSOLUTE_PATH_REPORT}/{nome_report}_1.pdf", "wb") as out:
+                        with open(
+                            f"{ABSOLUTE_PATH_REPORT}/{nome_report}_1.pdf", "wb"
+                        ) as out:
                             pdf_writer.write(out)
 
                         pdf_writer = PdfWriter()
@@ -1812,7 +2278,9 @@ for prog in progetti:
                             page = pdf.pages[page_num]
                             pdf_writer.add_page(page)
 
-                        with open(f"{ABSOLUTE_PATH_REPORT}/{nome_report}_2.pdf", "wb") as out:
+                        with open(
+                            f"{ABSOLUTE_PATH_REPORT}/{nome_report}_2.pdf", "wb"
+                        ) as out:
                             pdf_writer.write(out)
 
                         # unire i tre pdf nel seguente ordine:
@@ -1821,12 +2289,11 @@ for prog in progetti:
                         # 3. la seconda parte del report
 
                         pdf_writer = PdfWriter()
-                        pdf1 = PdfReader(
-                            f"{ABSOLUTE_PATH_REPORT}/{nome_report}_1.pdf")
+                        pdf1 = PdfReader(f"{ABSOLUTE_PATH_REPORT}/{nome_report}_1.pdf")
                         pdf2 = PdfReader(
-                            f"{ABSOLUTE_PATH_REPORT}/{nome_report}_Analisi.pdf")
-                        pdf3 = PdfReader(
-                            f"{ABSOLUTE_PATH_REPORT}/{nome_report}_2.pdf")
+                            f"{ABSOLUTE_PATH_REPORT}/{nome_report}_Analisi.pdf"
+                        )
+                        pdf3 = PdfReader(f"{ABSOLUTE_PATH_REPORT}/{nome_report}_2.pdf")
 
                         for page_num in range(len(pdf1.pages)):
                             page = pdf1.pages[page_num]
@@ -1840,16 +2307,14 @@ for prog in progetti:
                             page = pdf3.pages[page_num]
                             pdf_writer.add_page(page)
 
-                        with open(f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf", "wb") as out:
+                        with open(
+                            f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf", "wb"
+                        ) as out:
                             pdf_writer.write(out)
 
-                        os.remove(
-                            f"{ABSOLUTE_PATH_REPORT}/{nome_report}_1.pdf")
-                        os.remove(
-                            f"{ABSOLUTE_PATH_REPORT}/{nome_report}_2.pdf")
-                        os.remove(
-                            f"{ABSOLUTE_PATH_REPORT}/{nome_report}_Analisi.pdf")
-
+                        os.remove(f"{ABSOLUTE_PATH_REPORT}/{nome_report}_1.pdf")
+                        os.remove(f"{ABSOLUTE_PATH_REPORT}/{nome_report}_2.pdf")
+                        os.remove(f"{ABSOLUTE_PATH_REPORT}/{nome_report}_Analisi.pdf")
                     delete = False
                     # with open(f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf", "rb") as fw:
                     #     r = requests.post(
@@ -1862,6 +2327,5 @@ for prog in progetti:
                         os.remove(f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf")
                 except:
                     print(
-                        f'{prog["alias_progetto"]} {data.strftime("%d/%m/%Y")} - ERRORE {format_exc()}')
-                    
-        time.sleep(120)
+                        f'{prog["alias_progetto"]} {data.strftime("%d/%m/%Y")} - ERRORE {format_exc()}'
+                    )
