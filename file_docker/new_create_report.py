@@ -269,10 +269,7 @@ def download_dati(place: dict, datainizio: datetime, datafine: datetime, req_typ
 
     print("Data inizio dopo la localizzazione:", datainizio)
     print("Data fine dopo la localizzazione:", datafine)
-
-    # togli un giorno dalla fine
-    datafine = datafine - timedelta(days=1)
-
+    
     # Data a partire dalla quale si richiedono i dati. Il formato è del tipo anno-mese-giorno separati da "-".
     start_date = datainizio.strftime("%Y-%m-%dT%H:%M:%S%z").replace("+", "%2B")
 
