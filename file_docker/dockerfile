@@ -4,8 +4,8 @@ FROM python:3.11-slim
 # Imposta la directory di lavoro
 WORKDIR /app
 
-# Copia il file requirements.txt (se disponibile)
-COPY . .
+# Copia i file nella directory di lavoro
+COPY . /app
 
 #creare una cartella che si chiama reports
 RUN mkdir reports

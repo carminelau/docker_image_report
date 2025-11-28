@@ -1733,6 +1733,8 @@ for prog in progetti:
 
                     pdf1 = genera_Pagina_Iniziale(proj=prog, freq=f)
 
+                    #stampa i dati che vengono passati alla funzione conteggio_sforamenti
+                    print(prog["luoghi"], datastart, datafinish, "hourly", prog["zoom"], f)
                     conteggio_sforamenti(places=prog["luoghi"], datainizio=datastart,
                                          datafine=datafinish, type="hourly", zoo=prog["zoom"], freq=f)
 
