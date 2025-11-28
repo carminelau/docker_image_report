@@ -2204,7 +2204,7 @@ for prog in progetti:
 
                     c = 0
                     # se lo zoom è  5 (centralina) ciclare sugli id della centralina e fare il merge dei pdf
-                    if prog["zoom"] == "5":
+                    if prog["zoom"] == 5:
                         for luogo in prog["luoghi"]:
                             id_centralina = str(luogo["centralina"]).upper()
                             pdf_sforamenti = f"{ABSOLUTE_PATH_REPORT}/Tabella_Analisi_{id_centralina}.pdf"
