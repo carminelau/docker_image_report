@@ -1754,8 +1754,22 @@ for prog in progetti:
                     conteggio_sforamenti(places=prog["luoghi"], datainizio=datastart,
                                          datafine=datafinish, type="hourly", zoo=prog["zoom"], freq=f)
 
-                    merge_pdfs(
-                        pdf1, f"{ABSOLUTE_PATH_REPORT}/Tabella_Analisi.pdf")
+                    c = 0
+                    # se lo zoom è  5 (centralina) ciclare sugli id della centralina e fare il merge dei pdf
+                    if prog["zoom"] == "5":
+                        for luogo in prog["luoghi"]:
+                            id_centralina = str(luogo["centralina"]).upper()
+                            pdf_sforamenti = f"{ABSOLUTE_PATH_REPORT}/Tabella_Analisi_{id_centralina}.pdf"
+                            if c == 0:
+                                merge_pdfs(pdf1, pdf_sforamenti)
+                            else:
+                                merge_pdfs(
+                                    f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf", pdf_sforamenti)
+                            c += 1
+                    else:
+                        pdf_sforamenti = f"{ABSOLUTE_PATH_REPORT}/Tabella_Analisi.pdf"
+                        merge_pdfs(pdf1, pdf_sforamenti)
+
 
                     pdf2 = genera_Pagine(proj=prog, freq=f)
                     merge_pdfs(
@@ -1848,3 +1862,5 @@ for prog in progetti:
                 except:
                     print(
                         f'{prog["alias_progetto"]} {data.strftime("%d/%m/%Y")} - ERRORE {format_exc()}')
+                    
+    time.sleep(20000000)
