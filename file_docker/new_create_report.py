@@ -416,13 +416,20 @@ def retrieve_project_by_id(apikey: str, project_id: str) -> dict:
 def get_start_end_date(freq: str, pro: dict = {}, dati=False):
     data_focus = datetime.now()
 
+    print("Data focus iniziale:", data_focus)
+
     if "datastart" in pro.keys():
         data_focus = pro["datastart"]
+
+    print("Data focus utilizzata:", data_focus)
 
     datainizio = pytz.timezone(tz).localize(
         data_focus.replace(hour=0, minute=0, second=0, microsecond=0))
     datafine = pytz.timezone(tz).localize(data_focus.replace(
         hour=23, minute=59, second=59, microsecond=0))
+    
+    print("Data inizio iniziale:", datainizio)
+    print("Data fine iniziale:", datafine)
 
     if freq == "giornalieri":
         datainizio = (data_focus - timedelta(days=1)
@@ -474,6 +481,9 @@ def get_start_end_date(freq: str, pro: dict = {}, dati=False):
                       month=1, day=1, hour=0, minute=0, second=0, microsecond=0))
         datafine = (data_focus.replace(year=data_focus.year-1, month=12, day=31, hour=23,
                     minute=59, second=59, microsecond=0))
+
+    print("Data inizio finale:", datainizio)
+    print("Data fine finale:", datafine)
 
     return datainizio, datafine
 
