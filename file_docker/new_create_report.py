@@ -335,8 +335,10 @@ def download_dati(place: dict, datainizio: datetime, datafine: datetime, req_typ
         req = requests.post(
             url, {"apikey": apikey, "obj_id": result}, stream=True)
 
+        print("Lunghezza contenuto dopo download posposto:", len(req.content))
         return req.content
     else:
+        print("Lunghezza contenuto dopo download diretto:", len(req.content))
         return req.content
 
 
@@ -1104,7 +1106,7 @@ def conteggio_sforamenti(places: dict, datainizio, datafine, type, zoo, freq, da
             datainizio, datafine = get_start_end_date(freq)
 
         dati = download_dati(place, datainizio, datafine, type_dato, zoo, "[]")
-        print("Lunghezza variabile dati: " + len(dati))
+        print(f"Lunghezza variabile dati: {len(dati)}")
         # Converte lo stream di byte in un oggetto leggibile da Pandas
         csv_data = BytesIO(dati)
 
