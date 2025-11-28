@@ -260,9 +260,15 @@ def download_dati(place: dict, datainizio: datetime, datafine: datetime, req_typ
     # zoom = 4 per i comuni
     # zoom = 5 per le centraline
 
+    print("Data inizio prima della localizzazione:", datainizio)
+    print("Data fine prima della localizzazione:", datafine)
+
     # localizzare datainizio e datafine
     datainizio = pytz.timezone(tz).localize(datainizio)
     datafine = pytz.timezone(tz).localize(datafine)
+
+    print("Data inizio dopo la localizzazione:", datainizio)
+    print("Data fine dopo la localizzazione:", datafine)
 
     # togli un giorno dalla fine
     datafine = datafine - timedelta(days=1)
