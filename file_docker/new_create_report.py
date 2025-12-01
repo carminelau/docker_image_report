@@ -2229,8 +2229,6 @@ for prog in progetti:
 
                     print(nome_report)
 
-                    exit()
-
                     if prog["pro"] == True:
                         genera_analisi_sforamenti(
                             proj=prog,
