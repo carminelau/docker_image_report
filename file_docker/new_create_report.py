@@ -36,10 +36,15 @@ genai.configure(api_key="AIzaSyCKL493mVFUdgcSATpsZzlAZM8BAtalCl4")
 LINGUA = "it"
 
 ABSOLUTE_PATH = os.path.dirname(os.path.abspath(__file__))
+print("Absolute path:", ABSOLUTE_PATH)
 ABSOLUTE_PATH_FONT = os.path.join(ABSOLUTE_PATH, "fonts")
+print("Font path:", ABSOLUTE_PATH_FONT)
 ABSOLUTE_PATH_IMG = os.path.join(ABSOLUTE_PATH, "img")
+print("Image path:", ABSOLUTE_PATH_IMG)
 ABSOLUTE_PATH_LANG = os.path.join(ABSOLUTE_PATH, "languages")
+print("Language path:", ABSOLUTE_PATH_LANG)
 ABSOLUTE_PATH_REPORT = os.path.join(ABSOLUTE_PATH, "reports")
+print("Report path:", ABSOLUTE_PATH_REPORT)
 
 server = "https://square.sensesquare.eu"
 
