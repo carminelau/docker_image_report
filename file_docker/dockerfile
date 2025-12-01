@@ -14,6 +14,8 @@ COPY . /app
 #creare una cartella che si chiama reports
 RUN mkdir reports
 
+RUN mkdir img
+
 # Installa le dipendenze specificate in requirements.txt
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
