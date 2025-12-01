@@ -2582,3 +2582,5 @@ for prog in progetti:
                 except:
                     print(
                         f'{prog["alias_progetto"]} {data.strftime("%d/%m/%Y")} - ERRORE {format_exc()}')
+                    
+time.sleep(2000000)
