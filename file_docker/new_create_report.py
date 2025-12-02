@@ -874,6 +874,9 @@ def get_picture_geomap_centralina(nome_centralina: str):
     }
 
     wpg = widget_picture_generator("WDBNX4IUF66C")
+    print( f'{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png')
+    print(conf)
+    print("widget_geomap_v2")
     wpg.get_widget_picture_file(
         f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png",
         "widget_geomap_v2",
@@ -918,6 +921,9 @@ def get_picture_geomap_place(luoghi: list, zoom: int):
         }
 
         wpg = widget_picture_generator("WDBNX4IUF66C")
+        print( f'{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png')
+        print(conf)
+        print("widget_geomap")
         wpg.get_widget_picture_file(
             f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png",
             "widget_geomap",
@@ -1018,6 +1024,7 @@ def get_picture_analyze_path(centraline=None, freq="", pro: dict = {}):
     wpg = widget_picture_generator("WDBNX4IUF66C")
     print( f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png')
     print(conf)
+    print("tool_analizza_percorsi")
     wpg.get_widget_picture_file(
         f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png',
         "tool_analizza_percorsi",
@@ -1142,6 +1149,9 @@ def get_picture_analyze_data(centraline=None, freq="", pro: dict = {}):
                 )
 
         wpg = widget_picture_generator("WDBNX4IUF66C")
+        print( f'{ABSOLUTE_PATH_IMG}/{inquinante}_chart.png')
+        print(conf)
+        print("tool_analizza_dati")
         wpg.get_widget_picture_file(
             f"{ABSOLUTE_PATH_IMG}/{inquinante}_chart.png",
             "tool_analizza_dati",
