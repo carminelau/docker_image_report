@@ -884,7 +884,7 @@ def get_picture_geomap_centralina(nome_centralina: str):
         f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png",
         "widget_geomap_v2",
         conf,
-        timeout=11,
+        
     )
     # Destroy the driver
     wpg.destroy()
@@ -934,7 +934,7 @@ def get_picture_geomap_place(luoghi: list, zoom: int):
             f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png",
             "widget_geomap",
             conf,
-            timeout=10,
+            
         )
         # Destroy the driver
         wpg.destroy()
@@ -1039,7 +1039,7 @@ def get_picture_analyze_path(centraline=None, freq="", pro: dict = {}):
         f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png',
         "tool_analizza_percorsi",
         conf,
-        timeout=11,
+        
     )
     # Destroy the driver
     wpg.destroy()
@@ -1170,7 +1170,7 @@ def get_picture_analyze_data(centraline=None, freq="", pro: dict = {}):
             f"{ABSOLUTE_PATH_IMG}/{inquinante}_chart.png",
             "tool_analizza_dati",
             conf,
-            timeout=15,
+            
         )
         # Destroy the driver
         wpg.destroy()
