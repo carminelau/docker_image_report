@@ -874,18 +874,20 @@ def get_picture_geomap_centralina(nome_centralina: str):
     }
 
     wpg = widget_picture_generator("WDBNX4IUF66C")
-    with open("prove.txt") as f:
-        f.write(f'{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png')
-        f.write("\n")
-        f.write(json.dumps(conf))
-        f.write("\n\n")
-        f.write("widget_geomap_v2\n\n")
+        
     wpg.get_widget_picture_file(
         f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png",
         "widget_geomap_v2",
         conf,
-        
+        timeout=10
     )
+    
+    size = os.path.getsize(f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png")
+
+    while size < 3450:
+        wpg.get_widget_picture_file(f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png", "widget_geomap_v2", conf, timeout=10)
+        size = os.path.getsize(f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png")
+        
     # Destroy the driver
     wpg.destroy()
 
@@ -924,18 +926,19 @@ def get_picture_geomap_place(luoghi: list, zoom: int):
         }
 
         wpg = widget_picture_generator("WDBNX4IUF66C")
-        with open("prove.txt", "a") as f:
-            f.write(f'{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png')
-            f.write("\n")
-            f.write(json.dumps(conf))
-            f.write("\n\n")
-            f.write("widget_geomap\n\n")
+        
         wpg.get_widget_picture_file(
             f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png",
             "widget_geomap",
             conf,
-            
+            timeout=10
         )
+        
+        size = os.path.getsize(f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png")
+        while size < 3450:
+            wpg.get_widget_picture_file(f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png", "widget_geomap", conf, timeout=10)
+            size = os.path.getsize(f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png")
+            
         # Destroy the driver
         wpg.destroy()
 
@@ -1028,19 +1031,19 @@ def get_picture_analyze_path(centraline=None, freq="", pro: dict = {}):
         legenda.update({centralina: agg["color"]})
 
     wpg = widget_picture_generator("WDBNX4IUF66C")
-    with open("prove.txt", "a") as f:
-        f.write(f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png')
-        f.write("\n")
-        f.write(json.dumps(conf))
-        f.write("\n\n")
-        f.write("tool_analizza_percorsi\n\n")
 
     wpg.get_widget_picture_file(
         f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png',
         "tool_analizza_percorsi",
         conf,
-        
+        timeout=10
     )
+    
+    size = os.path.getsize(f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png')
+    while size < 3450:
+        wpg.get_widget_picture_file(f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png', "tool_analizza_percorsi", conf, timeout=10)
+        size = os.path.getsize(f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png')
+    
     # Destroy the driver
     wpg.destroy()
 
@@ -1159,19 +1162,19 @@ def get_picture_analyze_data(centraline=None, freq="", pro: dict = {}):
                 )
 
         wpg = widget_picture_generator("WDBNX4IUF66C")
-        with open("prove.txt", "a") as f:
-            f.write(f'{ABSOLUTE_PATH_IMG}/{inquinante}_chart.png')
-            f.write("\n")
-            f.write(json.dumps(conf))
-            f.write("\n\n")
-            f.write("tool_analizza_dati\n\n")
 
         wpg.get_widget_picture_file(
             f"{ABSOLUTE_PATH_IMG}/{inquinante}_chart.png",
             "tool_analizza_dati",
             conf,
-            
+            timeout=10
         )
+        
+        size = os.path.getsize(f"{ABSOLUTE_PATH_IMG}/{inquinante}_chart.png")
+        while size < 3450:
+            wpg.get_widget_picture_file(f"{ABSOLUTE_PATH_IMG}/{inquinante}_chart.png", "tool_analizza_dati", conf, timeout=10)
+            size = os.path.getsize(f"{ABSOLUTE_PATH_IMG}/{inquinante}_chart.png")
+            
         # Destroy the driver
         wpg.destroy()
 
