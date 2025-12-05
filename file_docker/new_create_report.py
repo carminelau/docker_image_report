@@ -879,13 +879,13 @@ def get_picture_geomap_centralina(nome_centralina: str):
         f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png",
         "widget_geomap_v2",
         conf,
-        timeout=10
+        timeout=15
     )
     
     size = os.path.getsize(f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png")
 
     while size < 3450:
-        wpg.get_widget_picture_file(f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png", "widget_geomap_v2", conf, timeout=10)
+        wpg.get_widget_picture_file(f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png", "widget_geomap_v2", conf, timeout=15)
         size = os.path.getsize(f"{ABSOLUTE_PATH_IMG}/mappa_{nome_centralina}.png")
         
     # Destroy the driver
@@ -931,12 +931,12 @@ def get_picture_geomap_place(luoghi: list, zoom: int):
             f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png",
             "widget_geomap",
             conf,
-            timeout=10
+            timeout=15
         )
         
         size = os.path.getsize(f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png")
         while size < 3450:
-            wpg.get_widget_picture_file(f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png", "widget_geomap", conf, timeout=10)
+            wpg.get_widget_picture_file(f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png", "widget_geomap", conf, timeout=15)
             size = os.path.getsize(f"{ABSOLUTE_PATH_IMG}/mappa_{lista_nomi[zoom]}.png")
             
         # Destroy the driver
@@ -1036,12 +1036,12 @@ def get_picture_analyze_path(centraline=None, freq="", pro: dict = {}):
         f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png',
         "tool_analizza_percorsi",
         conf,
-        timeout=10
+        timeout=15
     )
     
     size = os.path.getsize(f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png')
     while size < 3450:
-        wpg.get_widget_picture_file(f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png', "tool_analizza_percorsi", conf, timeout=10)
+        wpg.get_widget_picture_file(f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png', "tool_analizza_percorsi", conf, timeout=15)
         size = os.path.getsize(f'{ABSOLUTE_PATH_IMG}/mappa_{pro["alias_progetto"]}_path.png')
     
     # Destroy the driver
