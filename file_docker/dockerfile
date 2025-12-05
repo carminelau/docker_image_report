@@ -11,9 +11,8 @@ WORKDIR /app
 # Copia i file nella directory di lavoro
 COPY . /app
 
-#creare una cartella che si chiama reports
+# Crea cartelle necessarie
 RUN mkdir reports
-
 RUN mkdir img
 
 # Installa le dipendenze specificate in requirements.txt
@@ -22,5 +21,9 @@ RUN python -m pip install --no-cache-dir -r requirements.txt
 RUN --mount=type=secret,id=API_OPENAI \
     export OPENAI_KEY=$(cat /run/secrets/API_OPENAI)
 
-# Comando di default: avvia una shell Python interattiva
-CMD ["python"]
+# Il log.txt sarà disponibile nella directory /app
+# Puoi visualizzarlo con: docker exec <container_name> cat log.txt
+# O copiarlo con: docker cp <container_name>:/app/log.txt .
+
+# Comando di default: esegui lo script Python
+CMD ["python3", "new_create_report.py"]

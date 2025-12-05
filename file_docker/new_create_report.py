@@ -33,18 +33,37 @@ from traceback import format_exc
 
 genai.configure(api_key="AIzaSyCKL493mVFUdgcSATpsZzlAZM8BAtalCl4")
 
+# Logger setup
+LOG_FILE = "log.txt"
+
+def log_message(message):
+    """Scrivi messaggi nel file log.txt e anche in console"""
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_entry = f"[{timestamp}] {message}"
+    
+    # Scrivi nel file
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(log_entry + "\n")
+    
+    # Scrivi anche in console per debug
+    print(log_entry)
+
+# Pulisci il file di log all'avvio
+if os.path.exists(LOG_FILE):
+    os.remove(LOG_FILE)
+
 LINGUA = "it"
 
 ABSOLUTE_PATH = os.path.dirname(os.path.abspath(__file__))
-print("Absolute path:", ABSOLUTE_PATH)
+log_message("Absolute path: " + ABSOLUTE_PATH)
 ABSOLUTE_PATH_FONT = os.path.join(ABSOLUTE_PATH, "fonts")
-print("Font path:", ABSOLUTE_PATH_FONT)
+log_message("Font path: " + ABSOLUTE_PATH_FONT)
 ABSOLUTE_PATH_IMG = os.path.join(ABSOLUTE_PATH, "img")
-print("Image path:", ABSOLUTE_PATH_IMG)
+log_message("Image path: " + ABSOLUTE_PATH_IMG)
 ABSOLUTE_PATH_LANG = os.path.join(ABSOLUTE_PATH, "languages")
-print("Language path:", ABSOLUTE_PATH_LANG)
+log_message("Language path: " + ABSOLUTE_PATH_LANG)
 ABSOLUTE_PATH_REPORT = os.path.join(ABSOLUTE_PATH, "reports")
-print("Report path:", ABSOLUTE_PATH_REPORT)
+log_message("Report path: " + ABSOLUTE_PATH_REPORT)
 
 server = "https://square.sensesquare.eu"
 
@@ -426,17 +445,17 @@ def download_dati(
 
     # Richiesta GET
     req = requests.get(url)
-    print("Stato richiesta download dati:", req.status_code)
+    log_message("Stato richiesta download dati: " + str(req.status_code))
 
     result = ""
     if '"response_code":300' in req.text:
-        print("download Posposto")
+        log_message("download Posposto")
         result = req.json()["result"]
         pending = True
         while pending:
             url = f"{server}:5001/ping_download"
             req = requests.post(url, {"apikey": apikey, "obj_id": result})
-            print(req.text)
+            log_message(req.text)
 
             if req.json()["response_code"] == 200:
                 pending = False
@@ -447,10 +466,10 @@ def download_dati(
         url = f"{server}:5001/download_posposto"
         req = requests.post(url, {"apikey": apikey, "obj_id": result}, stream=True)
 
-        print("Lunghezza contenuto dopo download posposto:", len(req.content))
+        log_message("Lunghezza contenuto dopo download posposto: " + str(len(req.content)))
         return req.content
     else:
-        print("Lunghezza contenuto dopo download diretto:", len(req.content))
+        log_message("Lunghezza contenuto dopo download diretto: " + str(len(req.content)))
         return req.content
 
 
@@ -495,14 +514,14 @@ def analisi_sforamenti(
     # Mostra solo le righe in cui c'è almeno uno sforamento
     sforamenti_righe = sforamenti.any(axis=1)
 
-    print(sforamenti)
-    print(sforamenti_righe)
+    log_message(str(sforamenti))
+    log_message(str(sforamenti_righe))
 
     # Output con righe che contengono sforamenti
     df_sforamenti = df[sforamenti_righe]
 
-    print("Righe con sforamenti:")
-    print(df_sforamenti)
+    log_message("Righe con sforamenti:")
+    log_message(str(df_sforamenti))
 
     if len(df_sforamenti) > 0:
         model = genai.GenerativeModel("gemini-1.5-flash")
@@ -1057,9 +1076,9 @@ def get_picture_analyze_data(centraline=None, freq="", pro: dict = {}):
     else:
         datainizio, datafine = get_start_end_date(freq, pro)
 
-    print("-------------------")
-    print(datainizio, datafine)
-    print("-------------------")
+    log_message("-------------------")
+    log_message(str(datainizio) + " " + str(datafine))
+    log_message("-------------------")
     typef = ""
     if freq == "giornalieri":
         typef = "hourly"
@@ -1302,7 +1321,7 @@ def genera_Pagine(stile="Helvetica", x=30, y=770, cont=0, proj={}, freq=""):
                     # dato il percorso define il luogo e lo zoom in cui rientra e il colore della legenda
                     f"- {info['ID']} - Centralina Mobile - {get_name_color(leg[info['ID']])}"
                 )
-                print(
+                log_message(
                     f"- {info['ID']} - Centralina Mobile - {get_name_color(leg[info['ID']])} - {leg[info['ID']]}"
                 )
         if proj["zoom"] == 4:
@@ -1412,7 +1431,7 @@ def genera_analisi_sforamenti(
     if datainizio == None or datafine == None:
         datainizio, datafine = get_start_end_date(freq, proj)
 
-    print("Analisi Sforamenti da ", datainizio, " a ", datafine)
+    log_message("Analisi Sforamenti da " + str(datainizio) + " a " + str(datafine))
 
     document = SimpleDocTemplate(
         f"{ABSOLUTE_PATH_REPORT}/{title}_Analisi.pdf", pagesize=A4
@@ -1467,7 +1486,7 @@ def conteggio_sforamenti(
 
         id = str(place["centralina"]).upper()
 
-        print("Lunghezza dataframe: ", len(df))
+        log_message("Lunghezza dataframe: " + str(len(df)))
         df_sforamenti = pd.DataFrame()
 
         # convertire la colonna timestamp in formato datetime partendo da questa stringa: 2024-01-02T19:00:00+0100
@@ -1475,13 +1494,13 @@ def conteggio_sforamenti(
             df["timestamp"], format="%Y-%m-%dT%H:%M:%S%z", utc=True
         )
 
-        print(df.dtypes)
+        log_message(str(df.dtypes))
 
         # per ogni mese dell'anno contare quante volte i vari inquinanti superano il limite
         for mese in range(1, 13):
             df_mese = df[(df["timestamp"].dt.month == mese)]
 
-            print(f"Lunghezza dataframe mese {mese}: ", len(df_mese))
+            log_message(f"Lunghezza dataframe mese {mese}: " + str(len(df_mese)))
 
             for inquinante in df_mese.columns:
                 nome_inq = inquinante.split(" ")[0]
@@ -1600,7 +1619,7 @@ def conteggio_sforamenti(
 
         # Aggiungi la tabella al documento
 
-        print("Analisi Sforamenti da ", datainizio, " a ", datafine)
+        log_message("Analisi Sforamenti da " + str(datainizio) + " a " + str(datafine))
 
         document = SimpleDocTemplate(
             f"{ABSOLUTE_PATH_REPORT}/Tabella_Analisi_{id}.pdf", pagesize=A4
@@ -1636,7 +1655,7 @@ def conteggio_sforamenti(
 
             df_season = df_season.drop("ID", axis=1)
 
-            print(df_season.columns)
+            log_message(str(df_season.columns))
 
             df_season = df_season.groupby(
                 df["timestamp"].dt.quarter
@@ -1909,7 +1928,7 @@ def generate_comments(places: dict, zoo, freq):
     prompt += df.to_string(index=False)
 
     prompt += "\n\n"
-    print(prompt)
+    log_message(prompt)
     chat_completion = openai.ChatCompletion.create(
         # Imposta il numero massimo di token per la risposta
         model="gpt-3.5-turbo",
@@ -2133,7 +2152,7 @@ def check_old_report(id: str, f: str, datastart: datetime, datafinish: datetime)
 
     except:
         report_da_fare = [datastart]
-        print(req.text)
+        log_message(req.text)
 
     if report_da_fare == []:
         report_da_fare = [datetime.now()]
@@ -2146,7 +2165,7 @@ progetti = retrieve_project("WDBNX4IUF66C")
 
 for prog in progetti:
     if prog["attivo"] is True:
-        print(prog["alias_progetto"] + " " + str(prog["frequenze"]))
+        log_message(prog["alias_progetto"] + " " + str(prog["frequenze"]))
 
         if "lingua" in prog:
             LINGUA = prog["lingua"]
@@ -2167,7 +2186,7 @@ for prog in progetti:
                 and datetime.now().month != 1
             ):
                 continue
-            print(f)
+            log_message(f)
             report_mancanti = check_old_report(
                 prog["id_progetto"],
                 f,
@@ -2175,7 +2194,7 @@ for prog in progetti:
                 datetime.now(),
             )
 
-            print(report_mancanti)
+            log_message(str(report_mancanti))
 
             for data in report_mancanti:
                 try:
@@ -2256,7 +2275,7 @@ for prog in progetti:
                         "token": TOKEN_WRITE,
                     }
 
-                    print(nome_report)
+                    log_message(nome_report)
 
                     if prog["pro"] == True:
                         genera_analisi_sforamenti(
@@ -2334,7 +2353,7 @@ for prog in progetti:
                     if delete:
                         os.remove(f"{ABSOLUTE_PATH_REPORT}/{nome_report}.pdf")
                 except:
-                    print(
+                    log_message(
                         f'{prog["alias_progetto"]} {data.strftime("%d/%m/%Y")} - ERRORE {format_exc()}'
                     )
 
